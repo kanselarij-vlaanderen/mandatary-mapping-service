@@ -4,14 +4,15 @@ import { getSimilarity, getWeightedScore } from './similarity/similarity';
 import { getMandatarissen } from './queryTools/mandatarissen';
 import { getAgendapunten } from './queryTools/agendapunten';
 import { findSamenstelling } from './queryTools/samenstellingen';
-import { findThemisMandataris } from './queryTools/themisMatching';
+import { findThemisMandataris, SIMILARITY_THRESHOLDS } from './queryTools/themisMatching';
 
 // for debugging
-const LIMIT = 1000;
+const LIMIT = 0;
+const LOGGING = false;
 
 let kaleidosData = {};
 // execute this on startup to speed things up
-getMandatarissen(LIMIT).then(async (result) => {
+getMandatarissen().then(async (result) => {
   if (result) {
     kaleidosData.publicMandatarissen = result.public;
     kaleidosData.kanselarijMandatarissen = result.kanselarij;
@@ -25,7 +26,7 @@ getMandatarissen(LIMIT).then(async (result) => {
       if (agendapunt.kaleidosMandataris && samenstellingsDatum) {
         agendapunt.samenstelling = findSamenstelling(agendapunt.kaleidosMandataris, samenstellingsDatum);
         if (agendapunt.samenstelling && agendapunt.samenstelling.mandatarissen) {
-          agendapunt.themisMandataris = findThemisMandataris(agendapunt.kaleidosMandataris, agendapunt.samenstelling.mandatarissen);
+          agendapunt.themisMandataris = findThemisMandataris(agendapunt.kaleidosMandataris, agendapunt.samenstelling.mandatarissen,SIMILARITY_THRESHOLDS, LOGGING);
         } else {
           notfound++;
         }
@@ -62,7 +63,7 @@ export default {
     }
   },
 
-  getAgendapuntMatches: async function () {
+  getAgendapuntMatches: async function (includeSamenstelling) {
     if (!kaleidosData.agendapunten) {
       return { 'error': 'Query still in progress. Try again later.' };
     }
@@ -74,23 +75,19 @@ export default {
       meta: {
         kaleidosTotal: {
           value: 0,
-          description: 'Total number of Kaleidos mandataries.'
+          description: 'Total number of unique Kaleidos mandataries associated with the agendapoints.'
         },
         themisTotal: {
           value: 0,
-          description: 'Total number of Themis mandataries.'
+          description: 'Total number of unique Themis mandataries matched with the agendapoints.'
         },
-        correct: {
+        agendapoints: {
           value: 0,
-          description: 'Number of Kaleidos mandataries for which no other Kaleidos mandatary was matched to the same mandatary in Themis.'
-        },
-        double: {
-          value: 0,
-          description: 'Number of Kaleidos mandataries for which at least one other Kaleidos mandatary was matched to the same mandatary in Themis.'
+          description: 'Total number of agendapoints.'
         },
         missing: {
           value: 0,
-          description: 'Number of Kaleidos mandataries for which no matching mandatary was found in Themis'
+          description: 'Number of agendapoints for which no matching mandatary was found in Themis'
         },
         score: {
           min: 0,
@@ -100,27 +97,24 @@ export default {
         },
         perfectScoringMatches: {
           value: 0,
-          description: 'Number of Kaleidos mandataries that got a Themis match with score 1'
-        },
-        similarityThresholds: {
-          value: SIMILARITY_THRESHOLDS,
-          description: 'Similarity threshold used for the matching algorithm.'
+          description: 'Number of agendapoints that got a Themis match with score 1'
         }
       },
-      agendapunten: kaleidosData.agendapunten
+      agendapunten: []
     };
     // group them by themis url && generate some statistics
     for (const agendapunt of kaleidosData.agendapunten) {
+      results.meta.agendapoints.value++;
       if (agendapunt.mandataris) {
         if (!kaleidosMandatarissen[agendapunt.mandataris]) {
-          results.meta.kaleidosTotal++;
+          results.meta.kaleidosTotal.value++;
           kaleidosMandatarissen[agendapunt.mandataris] = [];
         }
         kaleidosMandatarissen[agendapunt.mandataris].push(agendapunt);
       }
       if (agendapunt.themisMandataris) {
-        if (!results.mandatarissen[agendapunt.themisMandataris.mandataris]) {
-          results.meta.themisTotal++;
+        if (!themisMandatarissen[agendapunt.themisMandataris.mandataris]) {
+          results.meta.themisTotal.value++;
           themisMandatarissen[agendapunt.themisMandataris.mandataris] = [];
         }
         themisMandatarissen[agendapunt.themisMandataris.mandataris].push(agendapunt);
@@ -140,6 +134,8 @@ export default {
       } else {
         results.meta.missing.value++;
       }
+      // don't include the full government composition unless specifically requested, as this makes the result object very heavy
+      results.agendapunten.push({ ...agendapunt, samenstelling: includeSamenstelling ? agendapunt.samenstelling : undefined});
     }
     results.meta.score.avg = totalScoreCount ? 1.0 * totalScore / totalScoreCount : 0;
 

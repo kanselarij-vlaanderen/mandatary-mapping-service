@@ -3,9 +3,8 @@ import { distance } from 'fastest-levenshtein';
 // weighting used for all similarities in the final ranking of candidate matches. Total must equal 1
 const SIMILARITY_WEIGHTS = {
   name: 0.3,
-  familyName: 0.2,
+  familyName: 0.3,
   firstName: 0.2,
-  start: 0.1,
   titel: 0.2
 };
 
@@ -23,12 +22,11 @@ const getWeightedScore = function (scores) {
     if (SIMILARITY_WEIGHTS.hasOwnProperty(key)) {
       if (scores.hasOwnProperty(key)) {
         score += SIMILARITY_WEIGHTS[key] * scores[key];
-      } else {
-        score += SIMILARITY_WEIGHTS[key]; // when not scored, assign the full weight
       }
+      // when not scored, assign 0
     }
   }
   return score;
 };
 
-export { getSimilarity, getWeightedScore };
+export { SIMILARITY_WEIGHTS, getSimilarity, getWeightedScore };

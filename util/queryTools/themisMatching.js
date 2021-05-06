@@ -2,16 +2,16 @@ import { getSimilarity, getWeightedScore } from '../similarity/similarity';
 
 // thresholds used to consider a candidate mandatary a match
 const SIMILARITY_THRESHOLDS = {
-  name: 0.3,
-  familyName: 0.3,
-  firstName: 0.3,
-  start: 0.001,
-  titel: 0.1
+  name: 0.2,
+  familyName: 0.2,
+  firstName: 0,
+  start: 0,
+  titel: 0
 };
 
 // Finds the best match for a Kaleidos mandatary in the specified searchSet (ideally: a government composition as known in Themis).
 // thresholds can be set per compared property, as their similarity scales differ vastly. (a single threshold is too naive)
-const findThemisMandataris = function (mandataris, searchSet, thresholds) {
+const findThemisMandataris = function (mandataris, searchSet, thresholds, enableLogging) {
   if (!thresholds) {
     thresholds = SIMILARITY_THRESHOLDS;
   }
@@ -36,94 +36,73 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds) {
     // console.log(JSON.stringify(mandataris));
     // console.log('============');
     for (const themisMandataris of searchSet) {
-      let scores = {};
-      let compared = []; // for debugging/provenance purposes
+      themisMandataris.scores = {};
       // compare full name, first name, and family name
       if (mandataris.name) {
         let similarity = getSimilarity(mandataris.name, themisMandataris.voornaam + ' ' + themisMandataris.familienaam);
-        scores.name = similarity;
+        if (similarity >= thresholds.name) {
+          themisMandataris.scores.name = similarity;
+        }
       }
       if (mandataris.familyName) {
         let similarity = getSimilarity(mandataris.familyName, themisMandataris.familienaam);
-        scores.familyName = similarity;
-      }
-      let preliminaryMatch = false; // check if any of the scores were calculated
-      for (const key in scores) {
-        if (scores.hasOwnProperty(key) && thresholds.hasOwnProperty(key)) {
-          // as soon as either the name OR the family name matches, we consider it a preliminary match
-          if (scores[key] >= thresholds[key]) {
-            preliminaryMatch = true;
-          }
+        if (similarity >= thresholds.familyName) {
+          themisMandataris.scores.familyName = similarity;
         }
       }
 
-      // titles and firstNames are too unreliable to contribute to the score on their own (e.g., titles will always contain similar terms such as 'minister', and thus will never be 0)
-      // However, they can be tie-breakers when we have multiple preliminary matched mandataries with the same or a similar name
-
-      // if the firstName is set, it MUST match above the threshold
-      if (preliminaryMatch && mandataris.firstName) {
+      if (mandataris.firstName) {
         let similarity = getSimilarity(mandataris.firstName, themisMandataris.voornaam);
         if (similarity >= thresholds.firstName) {
-          scores.firstName = similarity;
-        } else {
-          preliminaryMatch = false; // stop here
+          themisMandataris.scores.firstName = similarity;
         }
       }
       // if the titel is set, it MUST match above the threshold
-      if (preliminaryMatch && mandataris.titel) {// check if 'minister-president' or 'voorzitter' occur in the title, but not 'vice'
-        if (themisMandataris.bestuursfunctieLabel === 'Minister-president') {
-          let similarity = 0;
+      if (mandataris.titel) {// check if 'minister-president' or 'voorzitter' occur in the title, but not 'vice'
+        let similarity = 0;
+        if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'minister-president') {
           if (mandataris.titel.toLowerCase().indexOf('vice') === -1 && (mandataris.titel.toLowerCase().indexOf('president') > -1 )) {
             similarity = 1;
           }
-          if (similarity === 1) {
-            scores.titel = similarity;
-          } else {
-            preliminaryMatch = false;// stop here
-          }
-        } else if (themisMandataris.bestuursfunctieLabel === 'Viceminister-president') {
-          let similarity = 0;
+        } else if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'viceminister-president') {
           if (mandataris.titel.toLowerCase().indexOf('vice') > -1) {
             similarity = 1;
           }
-          if (similarity === 1) {
-            scores.titel = similarity;
-          } else {
-            preliminaryMatch = false;// stop here
-          }
         } else if (themisMandataris.titel) {
           // compare the whole title
-          let similarity = getSimilarity(mandataris.titel, themisMandataris.titel);
-          if (similarity >= thresholds.start) {
-            scores.titel = similarity;
-          } else {
-            preliminaryMatch = false;// stop here
-          }
+          similarity = getSimilarity(mandataris.titel, themisMandataris.titel);
+        }
+        if (similarity >= thresholds.titel) {
+          themisMandataris.scores.titel = similarity;
         }
       }
-      // if everything checks out, add this to the possible matches
-      if (preliminaryMatch) {
-        possibleMatches.push({ score: getWeightedScore(scores), scores: scores, ...themisMandataris });
-      }
+      themisMandataris.score = getWeightedScore(themisMandataris.scores);
     }
   }
 
-  // now we need to rank the results and return the best one.
-  possibleMatches.sort((a, b) => {
-    let scoreA = getWeightedScore(a);
-    let scoreB = getWeightedScore(a);
-    return scoreA - scoreB;
-  });
-  if (possibleMatches.length > 0) {
+  if (searchSet.length > 0) {
+    // now we need to rank the results and return the best one.
+    searchSet.sort((a, b) => {
+      return b.score - a.score;
+    });
+    if (enableLogging) {
+      console.log('--------');
+      console.log('Matching scores for: ');
+      console.log(mandataris.name + ' ; ' + mandataris.firstName + ' ; ' + mandataris.familyName + ' ; ' + mandataris.titel);
+    }
     // console.log(`Possible Matches for ${mandataris.name ? mandataris.name : '(no name)'} (${mandataris.firstName ? mandataris.firstName : '(no firstName)'} ${mandataris.familyName ? mandataris.familyName : '(no familyName)'})`);
-    for (const possibleMatch of possibleMatches) {
+    for (const themisMandataris of searchSet) {
+      if (enableLogging) {
+        console.log('--');
+        console.log(themisMandataris.voornaam + ' ' + themisMandataris.familienaam + ' ; ' + themisMandataris.bestuursfunctieLabel + ' ; ' + themisMandataris.titel);
+        console.log(JSON.stringify(themisMandataris.scores));
+        console.log(themisMandataris.score);
+      }
       // console.log('' + possibleMatch.voornaam + ' ' + possibleMatch.familienaam + ' (score ' + possibleMatch.score + ')');
       // console.log('Scores: ' + JSON.stringify(possibleMatch.scores, null, ' '));
       // console.log('--------------');
     }
-  }
-  if (possibleMatches.length > 0) {
-    return { score: getWeightedScore(possibleMatches[0]), ...possibleMatches[0]};
+    return { score: searchSet[0].score, ...searchSet[0]};
   } else {
     // console.log(`No match found for ${mandataris.name ? mandataris.name : '(no name)'} (${mandataris.firstName ? mandataris.firstName : '(no firstName)'} ${mandataris.familyName ? mandataris.familyName : '(no familyName)'})`);
     // console.log('******************');
@@ -131,4 +110,4 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds) {
   }
 };
 
-export { findThemisMandataris };
+export { SIMILARITY_THRESHOLDS, findThemisMandataris };
