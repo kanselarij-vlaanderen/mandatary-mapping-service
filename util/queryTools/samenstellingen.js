@@ -6,6 +6,7 @@ import themisData from '../themisData';
 const findSamenstelling = function (mandataris, date) {
   if (mandataris && date) {
     let lookupDate = new Date(date);
+    // first try searching using a 'real' datetime for the meeting
     for (const regeringsUrl in themisData.regeringen) {
       if (themisData.regeringen.hasOwnProperty(regeringsUrl)) {
         const regering = themisData.regeringen[regeringsUrl];
@@ -18,6 +19,18 @@ const findSamenstelling = function (mandataris, date) {
                 return regering.samenstellingen[samenstellingStart];
               }
             }
+          }
+        }
+      }
+    }
+    // if no match was found, it means there's something special going on with the start and/or end date of the matching composition (e.g., they're the same, as with 2010-07-06T00:00:00Z)
+    let formattedLookupDate = date.substring(0,10); // get rid of any hours/minute/seconds suffixes we don't need
+    for (const regeringsUrl in themisData.regeringen) {
+      if (themisData.regeringen.hasOwnProperty(regeringsUrl)) {
+        const regering = themisData.regeringen[regeringsUrl];
+        for (const samenstellingStart in regering.samenstellingen) {
+          if (regering.samenstellingen.hasOwnProperty(samenstellingStart) && formattedLookupDate === samenstellingStart) {
+            return { ...regering.samenstellingen[samenstellingStart], stringDateMatch: true };
           }
         }
       }

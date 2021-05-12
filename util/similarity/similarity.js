@@ -8,10 +8,40 @@ const SIMILARITY_WEIGHTS = {
   titel: 0.2
 };
 
+// normalize a string/name by converting to lower case, removing double spaces, 'de', 'van', and padding hyphens,
+// as well as 'special' normalizations for specific types, such as names and titles
+const normalizeString = function (string, type) {
+  let normalizedString = '' + string.toLowerCase().trim();
+  if (type === 'name') {
+    // removing composed family name parts that will give false matches if left in. (e.g. 'De Ryck - De Croo')
+    normalizedString = normalizedString.replace(/^de[\s]+/i, '');
+    normalizedString = normalizedString.replace(/^van de[\s]+/i, '');
+    normalizedString = normalizedString.replace(/^van den[\s]+/i, '');
+  }
+  normalizedString = normalizedString.replace(/[^\s]+van /i, ' ');
+  normalizedString = normalizedString.replace(/[^\s]+de /i, ' ');
+  if (type === 'title') {
+    // normalizing common patterns such as 'vlaams minister' to 'vm'
+    normalizedString = normalizedString.replace(/vlaams minister/i, 'vm');
+    normalizedString = normalizedString.replace(/gemeenschapsminister/i, 'gm');
+  }
+  return normalizedString.replace(/\s+/g, ' ').replace(/([^\s]+)-([^\s]+)/g, '$1 - $2').trim();
+};
+
+const getDistance = function (a, b, type) {
+  let normalizedA = normalizeString(a, type);
+  let normalizedB = normalizeString(b, type);
+  return distance(normalizedA, normalizedB);
+};
+
 // calculates similarity between two strings based on their edit distance
-const getSimilarity = function (a, b) {
-  let d = distance(a.toLowerCase(), b.toLowerCase());
-  let similarity = d === 0 ? 1 : (1.0 / d);
+const getSimilarity = function (a, b, type) {
+  let normalizedA = normalizeString(a, type);
+  let normalizedB = normalizeString(b, type);
+  let d = distance(normalizedA, normalizedB);
+  let maxDistance = Math.max(normalizedA.length, normalizedB.length);
+  // this way, a distance of 0 gets similarity 1, where a distance equal to the length of the longest string (= max levenshtein distance) gets a similarity of 0
+  let similarity = 1.0 * (maxDistance - d) / (maxDistance + d);
   return similarity;
 };
 
@@ -29,4 +59,4 @@ const getWeightedScore = function (scores) {
   return score;
 };
 
-export { SIMILARITY_WEIGHTS, getSimilarity, getWeightedScore };
+export { SIMILARITY_WEIGHTS, getSimilarity, getWeightedScore, normalizeString, getDistance };

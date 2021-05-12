@@ -102,6 +102,19 @@ const createLookupDatasets = function () {
     };
     regeringsData.regeringen[legislatuur].samenstellingen[formattedStartDate].mandatarissen.push(formattedMandataris);
   }
+  // NOTE: the following fixes a fault in the constructed dataset, where the end date of one composition is sometimes 24 hours apart from the start of the next composition.
+  // this likely has to do with it being an 'end day', and it is formatted as, for example 1992-01-07T00:00:00Z, whereas it should be 1992-01-07T23:59:59Z
+  // this is important for later matching, so we need to correct it here.
+  for (const regeringsUrl in regeringsData.regeringen) {
+    if (regeringsData.regeringen.hasOwnProperty(regeringsUrl)) {
+      const regering = regeringsData.regeringen[regeringsUrl];
+      for (const samenstellingStart in regering.samenstellingen) {
+        if (regering.samenstellingen.hasOwnProperty(samenstellingStart) && regering.samenstellingen[samenstellingStart].einde) {
+          regering.samenstellingen[samenstellingStart].einde = regering.samenstellingen[samenstellingStart].einde.replace('T00:00:00Z', 'T23:59:59Z');
+        }
+      }
+    }
+  }
 };
 createLookupDatasets();
 

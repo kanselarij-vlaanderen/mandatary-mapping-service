@@ -12,7 +12,8 @@ const LOGGING = false;
 
 let kaleidosData = {};
 // execute this on startup to speed things up
-getMandatarissen().then(async (result) => {
+const runMatching = async function () {
+  let result = await getMandatarissen();
   if (result) {
     kaleidosData.publicMandatarissen = result.public;
     kaleidosData.kanselarijMandatarissen = result.kanselarij;
@@ -32,12 +33,16 @@ getMandatarissen().then(async (result) => {
         }
       }
     }
-    console.log(`WARNING: samenstelling niet gevonden voor ${notfound} agendapunten.`);
+    if (notfound) {
+      console.log(`WARNING: samenstelling niet gevonden voor ${notfound} agendapunten.`);
+    }
     kaleidosData.agendapunten = agendapunten;
   }
-});
+}
+runMatching();
 
 export default {
+  runMatching: runMatching,
 
   getAgendapunten: async function () {
     if (!kaleidosData.agendapunten) {
@@ -71,6 +76,7 @@ export default {
     let totalScoreCount = 0;
     let themisMandatarissen = {};
     let kaleidosMandatarissen = {};
+    let agendapunten = {};
     let results = {
       meta: {
         kaleidosTotal: {
@@ -89,6 +95,7 @@ export default {
           value: 0,
           description: 'Number of agendapoints for which no matching mandatary was found in Themis'
         },
+        doubles: {},
         score: {
           min: 0,
           max: 0,
@@ -104,7 +111,6 @@ export default {
     };
     // group them by themis url && generate some statistics
     for (const agendapunt of kaleidosData.agendapunten) {
-      results.meta.agendapoints.value++;
       if (agendapunt.mandataris) {
         if (!kaleidosMandatarissen[agendapunt.mandataris]) {
           results.meta.kaleidosTotal.value++;
@@ -133,6 +139,19 @@ export default {
         }
       } else {
         results.meta.missing.value++;
+      }
+      // some agendapoints are in the results multiple times, due to multiple hits for the triple patterns in the query
+      if (agendapunt.agendapunt) {
+        if (!agendapunten[agendapunt.agendapunt]) {
+          agendapunten[agendapunt.agendapunt] = [];
+          results.meta.agendapoints.value++;
+        } else {
+          if (!results.meta.doubles[agendapunt.agendapunt]) {
+            results.meta.doubles[agendapunt.agendapunt] = 1;
+          }
+          results.meta.doubles[agendapunt.agendapunt]++;
+        }
+        agendapunten[agendapunt.agendapunt].push(agendapunt);
       }
       // don't include the full government composition unless specifically requested, as this makes the result object very heavy
       results.agendapunten.push({ ...agendapunt, samenstelling: includeSamenstelling ? agendapunt.samenstelling : undefined});

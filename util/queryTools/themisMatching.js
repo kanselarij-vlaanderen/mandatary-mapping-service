@@ -1,12 +1,11 @@
-import { getSimilarity, getWeightedScore } from '../similarity/similarity';
+import { getSimilarity, getDistance, getWeightedScore, normalizeString } from '../similarity/similarity';
 
 // thresholds used to consider a candidate mandatary a match
 const SIMILARITY_THRESHOLDS = {
-  name: 0.2,
-  familyName: 0.2,
+  name: 0.4,
+  familyName: 0.4,
   firstName: 0,
-  start: 0,
-  titel: 0
+  titel: 0.4
 };
 
 // Finds the best match for a Kaleidos mandatary in the specified searchSet (ideally: a government composition as known in Themis).
@@ -15,20 +14,10 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds, enable
   if (!thresholds) {
     thresholds = SIMILARITY_THRESHOLDS;
   }
-  if (thresholds.name === undefined) {
-    thresholds.name = 0.5;
-  }
-  if (thresholds.firstName === undefined) {
-    thresholds.firstName = 0.5;
-  }
-  if (thresholds.familyName === undefined) {
-    thresholds.familyName = 0.5;
-  }
-  if (thresholds.start === undefined) {
-    thresholds.start = 0.03;
-  }
-  if (thresholds.titel === undefined) {
-    thresholds.titel = 0.25;
+  for (const key in SIMILARITY_THRESHOLDS) {
+    if (SIMILARITY_THRESHOLDS.hasOwnProperty(key) && thresholds[key] === undefined) {
+      thresholds[key] = SIMILARITY_THRESHOLDS[key];
+    }
   }
   // first get a set of preliminary matches
   let possibleMatches = []; // for debugging/provenance purposes
@@ -37,25 +26,29 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds, enable
     // console.log('============');
     for (const themisMandataris of searchSet) {
       themisMandataris.scores = {};
+      // themisMandataris.distances = {};
       // compare full name, first name, and family name
       if (mandataris.name) {
-        let similarity = getSimilarity(mandataris.name, themisMandataris.voornaam + ' ' + themisMandataris.familienaam);
-        if (similarity >= thresholds.name) {
-          themisMandataris.scores.name = similarity;
-        }
+        mandataris.normalizedName = normalizeString(mandataris.name, 'name');
+        themisMandataris.normalizedName = normalizeString(themisMandataris.voornaam + ' ' + themisMandataris.familienaam, 'name');
+        let similarity = getSimilarity(mandataris.name, themisMandataris.voornaam + ' ' + themisMandataris.familienaam, 'name');
+        themisMandataris.scores.name = similarity;
+        // themisMandataris.distances.name = getDistance(mandataris.name, themisMandataris.voornaam + ' ' + themisMandataris.familienaam, 'name');
       }
       if (mandataris.familyName) {
-        let similarity = getSimilarity(mandataris.familyName, themisMandataris.familienaam);
-        if (similarity >= thresholds.familyName) {
-          themisMandataris.scores.familyName = similarity;
-        }
+        mandataris.normalizedFamilyName = normalizeString(mandataris.familyName, 'name');
+        themisMandataris.normalizedFamilyName = normalizeString(themisMandataris.familienaam, 'name');
+        let similarity = getSimilarity(mandataris.familyName, themisMandataris.familienaam, 'name');
+        themisMandataris.scores.familyName = similarity;
+        // themisMandataris.distances.familyName = getDistance(mandataris.familyName, themisMandataris.familienaam, 'name');
       }
 
       if (mandataris.firstName) {
+        mandataris.normalizedFirstName = normalizeString(mandataris.firstName);
+        themisMandataris.normalizedFirstName = normalizeString(themisMandataris.voornaam);
         let similarity = getSimilarity(mandataris.firstName, themisMandataris.voornaam);
-        if (similarity >= thresholds.firstName) {
-          themisMandataris.scores.firstName = similarity;
-        }
+        themisMandataris.scores.firstName = similarity;
+        // themisMandataris.distances.firstName = getDistance(mandataris.firstName, themisMandataris.voornaam, 'name');
       }
       // if the titel is set, it MUST match above the threshold
       if (mandataris.titel) {// check if 'minister-president' or 'voorzitter' occur in the title, but not 'vice'
@@ -63,6 +56,8 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds, enable
         if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'minister-president') {
           if (mandataris.titel.toLowerCase().indexOf('vice') === -1 && (mandataris.titel.toLowerCase().indexOf('president') > -1 )) {
             similarity = 1;
+          } else if (mandataris.titel.toLowerCase().indexOf('vice') === -1 && (mandataris.titel.toLowerCase().indexOf('voorzitter') > -1 )) {
+            similarity = 0.1; // in the early days, they often used 'voorzitter' instead of minister-president
           }
         } else if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'viceminister-president') {
           if (mandataris.titel.toLowerCase().indexOf('vice') > -1) {
@@ -70,13 +65,20 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds, enable
           }
         } else if (themisMandataris.titel) {
           // compare the whole title
-          similarity = getSimilarity(mandataris.titel, themisMandataris.titel);
+          mandataris.normalizedTitel = normalizeString(mandataris.titel, 'title');
+          themisMandataris.normalizedTitel = normalizeString(themisMandataris.titel, 'title');
+          similarity = getSimilarity(mandataris.titel, themisMandataris.titel, 'title');
+          // themisMandataris.distances.titel = getDistance(mandataris.titel, themisMandataris.titel, 'title');
         }
-        if (similarity >= thresholds.titel) {
-          themisMandataris.scores.titel = similarity;
-        }
+        themisMandataris.scores.titel = similarity;
       }
-      themisMandataris.score = getWeightedScore(themisMandataris.scores);
+      // some properties are required to have at least some similarity, such as the name or familyName. Otherwise we get nonsense matches based on title or first name alone.
+      // if both are below the threshold, but the title has a good score, we can include the match, as this likely means there was no name set in Kaleidos
+      if (themisMandataris.scores.name > SIMILARITY_THRESHOLDS.name || themisMandataris.scores.familyName > SIMILARITY_THRESHOLDS.familyName || themisMandataris.scores.titel > SIMILARITY_THRESHOLDS.titel) {
+        themisMandataris.score = getWeightedScore(themisMandataris.scores);
+      } else {
+        themisMandataris.score = 0;
+      }
     }
   }
 
@@ -102,7 +104,9 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds, enable
       // console.log('Scores: ' + JSON.stringify(possibleMatch.scores, null, ' '));
       // console.log('--------------');
     }
-    return { score: searchSet[0].score, ...searchSet[0]};
+    if (searchSet[0].score > 0) {
+      return { score: searchSet[0].score, ...searchSet[0]};
+    }
   } else {
     // console.log(`No match found for ${mandataris.name ? mandataris.name : '(no name)'} (${mandataris.firstName ? mandataris.firstName : '(no firstName)'} ${mandataris.familyName ? mandataris.familyName : '(no familyName)'})`);
     // console.log('******************');
