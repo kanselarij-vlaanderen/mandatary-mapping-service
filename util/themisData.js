@@ -1,6 +1,7 @@
 /* Module that exports functions to load and lookup ground truth data from Themis */
 import { parseSparqlResults } from './queryTools/parseSparqlResults';
 import mandatarissenSparqlResult from '../data/mandatarissen.json';
+import { normalizeString } from './similarity/similarity';
 const mandatarissen = parseSparqlResults(mandatarissenSparqlResult);
 
 /*
@@ -98,7 +99,11 @@ const createLookupDatasets = function () {
       regeringsDuurVan: mandataris.van,
       regeringsDuurTot: mandataris.tot,
       start: mandataris.start,
-      einde: mandataris.einde
+      einde: mandataris.einde,
+      normalizedName: mandataris.voornaam && mandataris.familienaam? normalizeString(mandataris.voornaam + ' ' + mandataris.familienaam, 'name') : undefined,
+      normalizedFirstName: mandataris.voornaam ? normalizeString(mandataris.voornaam, 'name') : undefined,
+      normalizedFamilyName: mandataris.familienaam ? normalizeString(mandataris.familienaam, 'name') : undefined,
+      normalizedTitel: mandataris.titel ? normalizeString(mandataris.titel, 'title') : undefined
     };
     regeringsData.regeringen[legislatuur].samenstellingen[formattedStartDate].mandatarissen.push(formattedMandataris);
   }
@@ -110,6 +115,10 @@ const createLookupDatasets = function () {
       const regering = regeringsData.regeringen[regeringsUrl];
       for (const samenstellingStart in regering.samenstellingen) {
         if (regering.samenstellingen.hasOwnProperty(samenstellingStart) && regering.samenstellingen[samenstellingStart].einde) {
+          // the last composition of Homans I has an end date that's one off
+          if (samenstellingStart === '2019-07-19') {
+            regering.samenstellingen[samenstellingStart].einde = regering.samenstellingen[samenstellingStart].einde.replace('2019-10-02', '2019-10-01');
+          }
           regering.samenstellingen[samenstellingStart].einde = regering.samenstellingen[samenstellingStart].einde.replace('T00:00:00Z', 'T23:59:59Z');
         }
       }

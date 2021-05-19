@@ -44,11 +44,16 @@ runMatching();
 export default {
   runMatching: runMatching,
 
-  getAgendapunten: async function () {
+  getAgendapunten: async function (includeSamenstelling) {
     if (!kaleidosData.agendapunten) {
       return { 'error': 'Query still in progress. Try again later.' };
     }
-    return kaleidosData.agendapunten;
+    let agendapunten = [];
+    for (let agendapunt of kaleidosData.agendapunten) {
+      // don't include the full government composition unless specifically requested, as this makes the result object very heavy
+      agendapunten.push({ ...agendapunt, samenstelling: includeSamenstelling ? agendapunt.samenstelling : undefined});
+    }
+    return agendapunten;
   },
 
   getMandatarissen: async function (graph) {
@@ -68,7 +73,7 @@ export default {
     }
   },
 
-  getAgendapuntMatches: async function (includeSamenstelling) {
+  getAgendapuntMatches: async function (includeSamenstelling, baseUrl) {
     if (!kaleidosData.agendapunten) {
       return { 'error': 'Query still in progress. Try again later.' };
     }
@@ -81,19 +86,28 @@ export default {
       meta: {
         kaleidosTotal: {
           value: 0,
-          description: 'Total number of unique Kaleidos mandataries associated with the agendapoints.'
+          description: 'Total number of unique Kaleidos mandataries associated with the agendapoints.',
+          links: [`${baseUrl}/mandatarissen`]
         },
         themisTotal: {
           value: 0,
-          description: 'Total number of unique Themis mandataries matched with the agendapoints.'
+          description: 'Total number of unique Themis mandataries matched with the agendapoints.',
+          links: [`${baseUrl}/regeringen`]
         },
         agendapoints: {
           value: 0,
-          description: 'Total number of agendapoints.'
+          description: 'Total number of unique agendapoints.',
+          links: [`${baseUrl}/agendapunten`]
+        },
+        results: {
+          value: 0,
+          description: 'Total number of matchings.',
+          links: [`${baseUrl}/matchings`, `${baseUrl}/rerunmatching`]
         },
         missing: {
           value: 0,
-          description: 'Number of agendapoints for which no matching mandatary was found in Themis'
+          description: 'Number of agendapoints for which no matching mandatary was found in Themis',
+          links: [`${baseUrl}/missingthemismandataris`, `${baseUrl}/missingsamenstelling`, `${baseUrl}/missingdates`]
         },
         doubles: {},
         score: {
@@ -111,6 +125,7 @@ export default {
     };
     // group them by themis url && generate some statistics
     for (const agendapunt of kaleidosData.agendapunten) {
+      results.meta.results.value++;
       if (agendapunt.mandataris) {
         if (!kaleidosMandatarissen[agendapunt.mandataris]) {
           results.meta.kaleidosTotal.value++;
@@ -157,7 +172,7 @@ export default {
       results.agendapunten.push({ ...agendapunt, samenstelling: includeSamenstelling ? agendapunt.samenstelling : undefined});
     }
     results.meta.score.avg = totalScoreCount ? 1.0 * totalScore / totalScoreCount : 0;
-
+    delete results.meta.doubles;
     return results;
   },
 

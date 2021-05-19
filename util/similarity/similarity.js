@@ -14,16 +14,24 @@ const normalizeString = function (string, type) {
   let normalizedString = '' + string.toLowerCase().trim();
   if (type === 'name') {
     // removing composed family name parts that will give false matches if left in. (e.g. 'De Ryck - De Croo')
-    normalizedString = normalizedString.replace(/^de[\s]+/i, '');
-    normalizedString = normalizedString.replace(/^van de[\s]+/i, '');
+    normalizedString = normalizedString.replace(/\./i, '');
+    normalizedString = normalizedString.replace(/è/i, 'e');
+    normalizedString = normalizedString.replace(/é/i, 'e');
     normalizedString = normalizedString.replace(/^van den[\s]+/i, '');
+    normalizedString = normalizedString.replace(/^van de[\s]+/i, '');
+    normalizedString = normalizedString.replace(/^de[\s]+/i, '');
+    normalizedString = normalizedString.replace(/ van den[\s]+/i, ' ');
+    normalizedString = normalizedString.replace(/ van de[\s]+/i, ' ');
+    normalizedString = normalizedString.replace(/ de[\s]+/i, ' ');
+    normalizedString = normalizedString.replace(/- minister-president/, ''); //at least one Kaleidos mandatary actually had this in the name
+    normalizedString = normalizedString.replace(/schitlz/, 'schiltz'); //an outlier that falls just below the threshold because of this type, easier to correct it this way than adjusting the similarity measure
   }
-  normalizedString = normalizedString.replace(/[^\s]+van /i, ' ');
-  normalizedString = normalizedString.replace(/[^\s]+de /i, ' ');
   if (type === 'title') {
     // normalizing common patterns such as 'vlaams minister' to 'vm'
     normalizedString = normalizedString.replace(/vlaams minister/i, 'vm');
     normalizedString = normalizedString.replace(/gemeenschapsminister/i, 'gm');
+    normalizedString = normalizedString.replace(/pesident/i, 'president');
+    normalizedString = normalizedString.replace(/ van /i, ' ');
   }
   return normalizedString.replace(/\s+/g, ' ').replace(/([^\s]+)-([^\s]+)/g, '$1 - $2').trim();
 };
