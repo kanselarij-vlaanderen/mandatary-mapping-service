@@ -31,6 +31,10 @@ const normalizeString = function (string, type) {
     normalizedString = normalizedString.replace(/vlaams minister/i, 'vm');
     normalizedString = normalizedString.replace(/gemeenschapsminister/i, 'gm');
     normalizedString = normalizedString.replace(/pesident/i, 'president');
+    normalizedString = normalizedString.replace(/voozitter/i, 'voorzitter'); // yes, these all occur
+    normalizedString = normalizedString.replace(/voorzitte/i, 'voorzitter');
+    normalizedString = normalizedString.replace(/voorzittter/i, 'voorzitter');
+    normalizedString = normalizedString.replace(/voorzttter/i, 'voorzitter');
     normalizedString = normalizedString.replace(/ van /i, ' ');
   }
   return normalizedString.replace(/\s+/g, ' ').replace(/([^\s]+)-([^\s]+)/g, '$1 - $2').trim();

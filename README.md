@@ -46,3 +46,8 @@ To get a more overseeable overview of which kaleidos mandataries were mapped to 
 To see the ground truth government compositions generated from Themis, see http://localhost:8888/regeringen
 
 Finally, to see which agendapoints/mandatary mappings are still missing, visit http://localhost:8888/missingthemismandataris or http://localhost:8888/missingthemismandataris?includeSamenstelling=true
+
+
+## Export
+
+To generate a CSV file of the mapped mandataries, visit http://localhost:8888/generateMappingCSV

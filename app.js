@@ -3,6 +3,10 @@ import themisData from './util/themisData';
 import kaleidosData from './util/kaleidosData';
 import jsonParser from './util/jsonParser';
 import { isOutlier } from './util/queryTools/outliers';
+import { promises as fsp } from 'fs';
+import * as path from 'path';
+
+const EXPORT_FILE_PATH = '/data/mapping_export.csv';
 
 const getBaseUrl = function (req) {
   return `${req.protocol}://${req.get('host')}`;
@@ -29,6 +33,84 @@ const sort = function (array, sortBy, order) {
     }
     return 0;
   });
+};
+
+const getMappings = async function (includeSamenstelling) {
+  let matchings = await kaleidosData.getAgendapuntMatches(includeSamenstelling);
+  if (!matchings.agendapunten) {
+    return 'Query not finished yet. Try again later.';
+  }
+  let mappings = {};
+  if (matchings && matchings.agendapunten) {
+    for (const agendapunt of matchings.agendapunten) {
+      if (agendapunt.kaleidosMandataris && agendapunt.kaleidosMandataris.mandataris) {
+        if (!mappings[agendapunt.kaleidosMandataris.mandataris]) {
+          mappings[agendapunt.kaleidosMandataris.mandataris] = {
+            // person: agendapunt.kaleidosMandataris.person,
+            // firstName: agendapunt.kaleidosMandataris.firstName,
+            // familyName: agendapunt.kaleidosMandataris.familyName,
+            // name: agendapunt.kaleidosMandataris.name,
+            // titel: agendapunt.kaleidosMandataris.titel,
+            ...agendapunt.kaleidosMandataris,
+            themisMandatarissen: {}
+          };
+        }
+        if (agendapunt.themisMandataris) {
+          if (!mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris]) {
+            mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris] = {
+              // persoon: agendapunt.themisMandataris.persoon,
+              // voornaam: agendapunt.themisMandataris.voornaam,
+              // familienaam: agendapunt.themisMandataris.familienaam,
+              // bestuursfunctieLabel: agendapunt.themisMandataris.bestuursfunctieLabel,
+              // titel: agendapunt.themisMandataris.titel,
+              ...agendapunt.themisMandataris,
+              agendapunten: []
+            }
+          }
+          mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris].agendapunten.push(agendapunt.agendapunt);
+        }
+      }
+    }
+  }
+  // now turn this into an array
+  let mappingsArray = [];
+  for (const mandataris in mappings) {
+    if (mappings.hasOwnProperty(mandataris)) {
+      let kaleidosMandataris = {
+        kaleidosMandataris: {
+          mandataris: mandataris,
+          ...mappings[mandataris],
+          themisMandatarissen: undefined
+        },
+        themisMandatarissen: mappings[mandataris].themisMandatarissen
+      };
+      if (kaleidosMandataris.themisMandatarissen) {
+        let minScore = 2;
+        let person;
+        for (const themisMandataris in kaleidosMandataris.themisMandatarissen) {
+          if (kaleidosMandataris.themisMandatarissen.hasOwnProperty(themisMandataris)) {
+            if (kaleidosMandataris.themisMandatarissen[themisMandataris].score <= minScore) {
+              minScore = kaleidosMandataris.themisMandatarissen[themisMandataris].score;
+            }
+            // while we're looping through these anyway, just a quality check to see if there are multiple persons linked to the Kaleidos mandatary, which could be a red flag
+            if (kaleidosMandataris.themisMandatarissen[themisMandataris].persoon) {
+              if (!person) {
+                person = kaleidosMandataris.themisMandatarissen[themisMandataris].persoon;
+              }
+              if (kaleidosMandataris.themisMandatarissen[themisMandataris].persoon !== person) {
+                console.log(`WARNING: kaleidosMandataris ${mandataris.mandataris} is linked to multiple persons, which should be impossible.`);
+              }
+            }
+          }
+        }
+        kaleidosMandataris.minScore = minScore;
+      }
+      mappingsArray.push(kaleidosMandataris);
+    }
+  }
+  // and sort it by ascending score for easy debugging
+  sort(mappingsArray, 'minScore', 'asc');
+  return mappingsArray;
 };
 
 app.get('/', function(req, res) {
@@ -129,81 +211,26 @@ app.get('/rerunmatching', async function(req, res) {
 // returns all unique Kaleidos mandataries, along with which themis mandataries they were matched to, for which agendapoints
 // useful query to gain insight: http://localhost:8888/mandatarismapping?sortBy=themisMandataris.score&order=asc
 app.get('/mandatarismapping', async function(req, res) {
-  let matchings = await kaleidosData.getAgendapuntMatches(req.query.includeSamenstelling);
-  if (!matchings.agendapunten) {
-    return res.send('Query not finished yet. Try again later.');
-  }
-  let mappings = {};
-  if (matchings && matchings.agendapunten) {
-    for (const agendapunt of matchings.agendapunten) {
-      if (agendapunt.kaleidosMandataris && agendapunt.kaleidosMandataris.mandataris) {
-        if (!mappings[agendapunt.kaleidosMandataris.mandataris]) {
-          mappings[agendapunt.kaleidosMandataris.mandataris] = {
-            // person: agendapunt.kaleidosMandataris.person,
-            // firstName: agendapunt.kaleidosMandataris.firstName,
-            // familyName: agendapunt.kaleidosMandataris.familyName,
-            // name: agendapunt.kaleidosMandataris.name,
-            // titel: agendapunt.kaleidosMandataris.titel,
-            ...agendapunt.kaleidosMandataris,
-            themisMandatarissen: {}
-          };
-        }
-        if (agendapunt.themisMandataris) {
-          if (!mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris]) {
-            mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris] = {
-              // persoon: agendapunt.themisMandataris.persoon,
-              // voornaam: agendapunt.themisMandataris.voornaam,
-              // familienaam: agendapunt.themisMandataris.familienaam,
-              // bestuursfunctieLabel: agendapunt.themisMandataris.bestuursfunctieLabel,
-              // titel: agendapunt.themisMandataris.titel,
-              ...agendapunt.themisMandataris,
-              agendapunten: []
-            }
-          }
-          mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris].agendapunten.push(agendapunt.agendapunt);
+  res.send(await getMappings(req.query.includeSamenstelling));
+});
+
+/* Generate a CSV with kaleidos mandatary, mapped themis mandatary, and agendapoints for which the mapping occurred */
+app.get('/generateMappingCSV', async function(req, res) {
+  let csvString = 'sep=;\n';
+  let mappings = await getMappings();
+  csvString += `kaleidosMandataris.name;kaleidosMandataris.firstName;kaleidosMandataris.familyName;kaleidosMandataris.titel;themisMandataris.voornaam;themisMandataris.familienaam;themisMandataris.bestuursfunctieLabel;themisMandataris.titel;minimale similariteit-score;aantal agendapunten;kaleidosMandataris URL; themisMandataris URL\n`;
+  if (mappings && Array.isArray(mappings)) {
+    for (const mapping of mappings) {
+      for (const themisUrl in mapping.themisMandatarissen) {
+        if (mapping.themisMandatarissen.hasOwnProperty(themisUrl)) {
+          csvString += `${mapping.kaleidosMandataris.name};${mapping.kaleidosMandataris.firstName};${mapping.kaleidosMandataris.familyName};${mapping.kaleidosMandataris.titel};${mapping.themisMandatarissen[themisUrl].voornaam};${mapping.themisMandatarissen[themisUrl].familienaam};${mapping.themisMandatarissen[themisUrl].bestuursfunctieLabel};${mapping.themisMandatarissen[themisUrl].titel};${mapping.minScore};${mapping.themisMandatarissen[themisUrl].agendapunten.length};${mapping.kaleidosMandataris.mandataris};${mapping.themisMandatarissen[themisUrl].mandataris}\n`;
         }
       }
     }
   }
-  // now turn this into an array
-  let mappingsArray = [];
-  for (const mandataris in mappings) {
-    if (mappings.hasOwnProperty(mandataris)) {
-      let kaleidosMandataris = {
-        kaleidosMandataris: {
-          mandataris: mandataris,
-          ...mappings[mandataris],
-          themisMandatarissen: undefined
-        },
-        themisMandatarissen: mappings[mandataris].themisMandatarissen
-      };
-      if (kaleidosMandataris.themisMandatarissen) {
-        let minScore = 2;
-        let person;
-        for (const themisMandataris in kaleidosMandataris.themisMandatarissen) {
-          if (kaleidosMandataris.themisMandatarissen.hasOwnProperty(themisMandataris)) {
-            if (kaleidosMandataris.themisMandatarissen[themisMandataris].score <= minScore) {
-              minScore = kaleidosMandataris.themisMandatarissen[themisMandataris].score;
-            }
-            // while we're looping through these anyway, just a quality check to see if there are multiple persons linked to the Kaleidos mandatary, which could be a red flag
-            if (kaleidosMandataris.themisMandatarissen[themisMandataris].persoon) {
-              if (!person) {
-                person = kaleidosMandataris.themisMandatarissen[themisMandataris].persoon;
-              }
-              if (kaleidosMandataris.themisMandatarissen[themisMandataris].persoon !== person) {
-                console.log(`WARNING: kaleidosMandataris ${mandataris.mandataris} is linked to multiple persons, which should be impossible.`);
-              }
-            }
-          }
-        }
-        kaleidosMandataris.minScore = minScore;
-      }
-      mappingsArray.push(kaleidosMandataris);
-    }
-  }
-  // and sort it by ascending score for easy debugging
-  sort(mappingsArray, 'minScore', 'asc');
-  res.send(mappingsArray);
+  csvString = csvString.replace(/undefined/g, '');
+  await fsp.writeFile(path.resolve(EXPORT_FILE_PATH), csvString);
+  res.send('CSV generated at ' + path.resolve(EXPORT_FILE_PATH));
 });
 
 app.use(errorHandler);
