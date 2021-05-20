@@ -6,7 +6,8 @@ import { isOutlier } from './util/queryTools/outliers';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 
-const EXPORT_FILE_PATH = '/data/mapping_export.csv';
+const MAPPING_EXPORT_FILE_PATH = '/data/mapping_export.csv';
+const MISSING_EXPORT_FILE_PATH = '/data/missing_export.csv';
 
 const getBaseUrl = function (req) {
   return `${req.protocol}://${req.get('host')}`;
@@ -113,6 +114,33 @@ const getMappings = async function (includeSamenstelling) {
   return mappingsArray;
 };
 
+const getMissing = async function (includeSamenstelling, includeSkipped) {
+  let agendapunten = await kaleidosData.getAgendapunten(includeSamenstelling);
+  let skipped = 0;
+  let filtered = agendapunten.filter((agendapunt) => {
+    let outlier = isOutlier(agendapunt.kaleidosMandataris);
+    if (outlier) {
+      skipped++;
+    }
+    return (!outlier || includeSkipped) && !agendapunt.themisMandataris
+  });
+  // group them by kaleidosMandataris
+  let grouped = {
+    skipped: skipped,
+    count: 0,
+    mandatarissen: {}
+  };
+  for (const agendapunt of filtered) {
+    if (!grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris]) {
+      grouped.count++;
+      grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris] = { count: 0, agendapunten: [], ...agendapunt.kaleidosMandataris };
+    }
+    grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris].count++;
+    grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris].agendapunten.push(agendapunt);
+  }
+  return grouped;
+}
+
 app.get('/', function(req, res) {
   res.send('Try /regeringen or /mandatarissen or /matchings');
 } );
@@ -147,30 +175,7 @@ app.get('/matchings', async function(req, res) {
 });
 
 app.get('/missingthemismandataris', async function(req, res) {
-  let agendapunten = await kaleidosData.getAgendapunten(req.query.includeSamenstelling);
-  let includeSkipped = req.query && req.query.includeSkipped;
-  let skipped = 0;
-  let filtered = agendapunten.filter((agendapunt) => {
-    let outlier = isOutlier(agendapunt.kaleidosMandataris);
-    if (outlier) {
-      skipped++;
-    }
-    return (!outlier || includeSkipped) && !agendapunt.themisMandataris
-  });
-  // group them by kaleidosMandataris
-  let grouped = {
-    skipped: skipped,
-    count: 0,
-    mandatarissen: {}
-  };
-  for (const agendapunt of filtered) {
-    if (!grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris]) {
-      grouped.count++;
-      grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris] = { count: 0, agendapunten: [] };
-    }
-    grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris].count++;
-    grouped.mandatarissen[agendapunt.kaleidosMandataris.mandataris].agendapunten.push(agendapunt);
-  }
+  let grouped = await getMissing(req.query.includeSamenstelling, req.query.includeSkipped);
   res.send(JSON.stringify(grouped));
 });
 
@@ -229,8 +234,24 @@ app.get('/generateMappingCSV', async function(req, res) {
     }
   }
   csvString = csvString.replace(/undefined/g, '');
-  await fsp.writeFile(path.resolve(EXPORT_FILE_PATH), csvString);
-  res.send('CSV generated at ' + path.resolve(EXPORT_FILE_PATH));
+  await fsp.writeFile(path.resolve(MAPPING_EXPORT_FILE_PATH), csvString);
+  res.send('CSV generated at ' + path.resolve(MAPPING_EXPORT_FILE_PATH));
+});
+
+/* Generate a CSV with missing mandataries */
+app.get('/generateMissingCSV', async function(req, res) {
+  let csvString = 'sep=;\n';
+  csvString += `name;firstName;familyName;titel;aantal agendapunten\n`;
+  let grouped = await getMissing(req.query.includeSamenstelling, req.query.includeSkipped);
+  for (const key in grouped.mandatarissen) {
+    if (grouped.mandatarissen.hasOwnProperty(key)) {
+      let mandataris = grouped.mandatarissen[key];
+      csvString += `${mandataris.name};${mandataris.firstName};${mandataris.familyName};${mandataris.titel};${mandataris.agendapunten.length}\n`;
+    }
+  }
+  csvString = csvString.replace(/undefined/g, '');
+  await fsp.writeFile(path.resolve(MISSING_EXPORT_FILE_PATH), csvString);
+  res.send('CSV generated at ' + path.resolve(MISSING_EXPORT_FILE_PATH));
 });
 
 app.use(errorHandler);

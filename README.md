@@ -51,3 +51,5 @@ Finally, to see which agendapoints/mandatary mappings are still missing, visit h
 ## Export
 
 To generate a CSV file of the mapped mandataries, visit http://localhost:8888/generateMappingCSV
+
+To generate a CSV file of the missing mandataries, visit http://localhost:8888/generateMissingCSV
