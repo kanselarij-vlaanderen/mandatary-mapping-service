@@ -9,8 +9,8 @@ import { promises as fsp } from 'fs';
 import * as path from 'path';
 
 const MAPPING_EXPORT_FILE_PATH = '/data/mapping_export.csv';
-const TTL_EXPORT_FILE_PATH = '/data/insert-';
-const SPARQL_EXPORT_FILE_PATH = '/data/mandatary-mapping.sparql';
+const TTL_EXPORT_FILE_PATH = '/data/insert_mandataries.ttl';
+const SPARQL_EXPORT_FILE_PATH = '/data/delete_mandataries.sparql';
 const MISSING_EXPORT_FILE_PATH = '/data/missing_export.csv';
 
 const getBaseUrl = function (req) {
@@ -41,21 +41,19 @@ const sort = function (array, sortBy, order) {
 };
 
 const getMappings = async function (includeSamenstelling) {
-  let matchings = await kaleidosData.getAgendapuntMatches(includeSamenstelling);
-  if (!matchings.agendapunten) {
+  let agendapuntMatches = await kaleidosData.getAgendapuntMatches(includeSamenstelling);
+  let procedurestapMatches = await kaleidosData.getProcedurestapMatches(includeSamenstelling);
+  let publicatieaangelegenheidMatches = await kaleidosData.getPublicatieaangelegenheidMatches(includeSamenstelling);
+  if (!agendapuntMatches.agendapunten || !procedurestapMatches.procedurestappen || !publicatieaangelegenheidMatches.publicatieaangelegenheden) {
     return 'Query not finished yet. Try again later.';
   }
   let mappings = {};
-  if (matchings && matchings.agendapunten) {
-    for (const agendapunt of matchings.agendapunten) {
+  // agendapunten
+  if (agendapuntMatches && agendapuntMatches.agendapunten) {
+    for (const agendapunt of agendapuntMatches.agendapunten) {
       if (agendapunt.kaleidosMandataris && agendapunt.kaleidosMandataris.mandataris) {
         if (!mappings[agendapunt.kaleidosMandataris.mandataris]) {
           mappings[agendapunt.kaleidosMandataris.mandataris] = {
-            // person: agendapunt.kaleidosMandataris.person,
-            // firstName: agendapunt.kaleidosMandataris.firstName,
-            // familyName: agendapunt.kaleidosMandataris.familyName,
-            // name: agendapunt.kaleidosMandataris.name,
-            // titel: agendapunt.kaleidosMandataris.titel,
             ...agendapunt.kaleidosMandataris,
             themisMandatarissen: {}
           };
@@ -63,16 +61,70 @@ const getMappings = async function (includeSamenstelling) {
         if (agendapunt.themisMandataris) {
           if (!mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris]) {
             mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris] = {
-              // persoon: agendapunt.themisMandataris.persoon,
-              // voornaam: agendapunt.themisMandataris.voornaam,
-              // familienaam: agendapunt.themisMandataris.familienaam,
-              // bestuursfunctieLabel: agendapunt.themisMandataris.bestuursfunctieLabel,
-              // titel: agendapunt.themisMandataris.titel,
               ...agendapunt.themisMandataris,
-              agendapunten: []
+              agendapunten: [],
+              procedurestappenMetHeeftBevoegde: [],
+              procedurestappenMetIndiener: [],
+              publicatieaangelegenheden: []
             }
           }
           mappings[agendapunt.kaleidosMandataris.mandataris].themisMandatarissen[agendapunt.themisMandataris.mandataris].agendapunten.push(agendapunt.agendapunt);
+        }
+      }
+    }
+  }
+  // procedurestappen
+  if (procedurestapMatches && procedurestapMatches.procedurestappen) {
+    for (const procedurestap of procedurestapMatches.procedurestappen) {
+      if (procedurestap.kaleidosMandataris && procedurestap.kaleidosMandataris.mandataris) {
+        if (!mappings[procedurestap.kaleidosMandataris.mandataris]) {
+          mappings[procedurestap.kaleidosMandataris.mandataris] = {
+            ...procedurestap.kaleidosMandataris,
+            themisMandatarissen: {}
+          };
+        }
+        if (procedurestap.themisMandataris) {
+          if (!mappings[procedurestap.kaleidosMandataris.mandataris].themisMandatarissen[procedurestap.themisMandataris.mandataris]) {
+            mappings[procedurestap.kaleidosMandataris.mandataris].themisMandatarissen[procedurestap.themisMandataris.mandataris] = {
+              ...procedurestap.themisMandataris,
+              agendapunten: [],
+              procedurestappenMetHeeftBevoegde: [],
+              procedurestappenMetIndiener: [],
+              publicatieaangelegenheden: []
+            }
+          }
+          if (procedurestap.relation.indexOf('mu.semte.ch/vocabularies/ext/heeftBevoegde') > -1) {
+            mappings[procedurestap.kaleidosMandataris.mandataris].themisMandatarissen[procedurestap.themisMandataris.mandataris].procedurestappenMetHeeftBevoegde.push(procedurestap.procedurestap);
+          } else if (procedurestap.relation.indexOf('mu.semte.ch/vocabularies/ext/indiener') > -1) {
+            mappings[procedurestap.kaleidosMandataris.mandataris].themisMandatarissen[procedurestap.themisMandataris.mandataris].procedurestappenMetIndiener.push(procedurestap.procedurestap);
+          } else {
+            throw `ERROR: invalid procedurestap: ${JSON.stringify(procedurestap)}`;
+          }
+        }
+      }
+    }
+  }
+  // publicatieaangelegenheden
+  if (publicatieaangelegenheidMatches && publicatieaangelegenheidMatches.publicatieaangelegenheden) {
+    for (const publicatieaangelegenheid of publicatieaangelegenheidMatches.publicatieaangelegenheden) {
+      if (publicatieaangelegenheid.kaleidosMandataris && publicatieaangelegenheid.kaleidosMandataris.mandataris) {
+        if (!mappings[publicatieaangelegenheid.kaleidosMandataris.mandataris]) {
+          mappings[publicatieaangelegenheid.kaleidosMandataris.mandataris] = {
+            ...publicatieaangelegenheid.kaleidosMandataris,
+            themisMandatarissen: {}
+          };
+        }
+        if (publicatieaangelegenheid.themisMandataris) {
+          if (!mappings[publicatieaangelegenheid.kaleidosMandataris.mandataris].themisMandatarissen[publicatieaangelegenheid.themisMandataris.mandataris]) {
+            mappings[publicatieaangelegenheid.kaleidosMandataris.mandataris].themisMandatarissen[publicatieaangelegenheid.themisMandataris.mandataris] = {
+              ...publicatieaangelegenheid.themisMandataris,
+              agendapunten: [],
+              procedurestappenMetHeeftBevoegde: [],
+              procedurestappenMetIndiener: [],
+              publicatieaangelegenheden: []
+            }
+          }
+          mappings[publicatieaangelegenheid.kaleidosMandataris.mandataris].themisMandatarissen[publicatieaangelegenheid.themisMandataris.mandataris].publicatieaangelegenheden.push(publicatieaangelegenheid.publicatieaangelegenheid);
         }
       }
     }
@@ -103,7 +155,8 @@ const getMappings = async function (includeSamenstelling) {
                 person = kaleidosMandataris.themisMandatarissen[themisMandataris].persoon;
               }
               if (kaleidosMandataris.themisMandatarissen[themisMandataris].persoon !== person) {
-                console.log(`WARNING: kaleidosMandataris ${mandataris.mandataris} is linked to multiple persons, which should be impossible.`);
+                console.log(`WARNING: kaleidosMandataris ${mandataris} is linked to multiple persons, which should be impossible.`);
+                console.log(`${kaleidosMandataris.themisMandatarissen[themisMandataris].persoon} !== ${person}`);
               }
             }
           }
@@ -458,17 +511,24 @@ app.get('/agendapunt-url', async function (req, res) {
   }
 });
 
-/* Generates a .ttl file with all the triples that need to be added to the database */
-app.get('/generatemigrationttl', async function(req, res) {
+/* Generates a .ttl file with all the triples that need to be added to the database, as well as a .sparql file with a query to remove the old mandataries and their links from the database */
+app.get('/generatemigration', async function(req, res) {
   try {
     let ttlString = `@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
 @prefix mandataris: <http://themis.vlaanderen.be/id/mandataris/> .
-@prefix agendapunten: <http://kanselarij.vo.data.gift/id/agendapunten/> .\n\n`;
+@prefix agendapunten: <http://kanselarij.vo.data.gift/id/agendapunten/> .
+@prefix procedurestappen: <http://kanselarij.vo.data.gift/id/procedurestappen/> .
+@prefix publicatieaangelegenheden: <http://kanselarij.vo.data.gift/id/publicatie-aangelegenheden/> .\n\n`;
     let mappings = await getMappings();
     // structure the data a bit different, so the turtle becomes more human-readable when we iterate over it
     let agendapunten = {};
+    let procedurestappenMetHeeftBevoegde = {};
+    let procedurestappenMetIndiener = {};
+    let publicatieaangelegenheden = {};
+    let toDeleteObject = {};
     if (mappings && Array.isArray(mappings)) {
       for (const mapping of mappings) {
+        const kaleidosMandataris = mapping.kaleidosMandataris.mandataris;
         for (const themisUrl in mapping.themisMandatarissen) {
           if (mapping.themisMandatarissen.hasOwnProperty(themisUrl)) {
             const mandataris = mapping.themisMandatarissen[themisUrl];
@@ -476,7 +536,57 @@ app.get('/generatemigrationttl', async function(req, res) {
               if (!agendapunten[agendapunt]) {
                 agendapunten[agendapunt] = [];
               }
-              agendapunten[agendapunt].splice(agendapunten[agendapunt].length, 0, themisUrl);
+              // make sure we only set/delete this relation once
+              if (agendapunten[agendapunt].indexOf(themisUrl) === -1) {
+                agendapunten[agendapunt].push(themisUrl);
+                // since this one has a mapping, the old one can be deleted
+                let triple = `<${agendapunt}> ext:heeftBevoegdeVoorAgendapunt <${kaleidosMandataris}>`;
+                if (!toDeleteObject[triple]) { // an array with indexOf gets bigger and bigger, resulting in a huge performance drop as the list grows. This way is much faster
+                  toDeleteObject[triple] = triple;
+                }
+              }
+            }
+            for (const procedurestap of mandataris.procedurestappenMetHeeftBevoegde) {
+              if (!procedurestappenMetHeeftBevoegde[procedurestap]) {
+                procedurestappenMetHeeftBevoegde[procedurestap] = [];
+              }
+              // make sure we only set this relation once
+              if (procedurestappenMetHeeftBevoegde[procedurestap].indexOf(themisUrl) === -1) {
+                procedurestappenMetHeeftBevoegde[procedurestap].push(themisUrl);
+                // since this one has a mapping, the old one can be deleted
+                let triple = `<${procedurestap}> ext:heeftBevoegde <${kaleidosMandataris}>`;
+                if (!toDeleteObject[triple]) {
+                  toDeleteObject[triple] = triple;
+                }
+              }
+            }
+            for (const procedurestap of mandataris.procedurestappenMetIndiener) {
+              if (!procedurestappenMetIndiener[procedurestap]) {
+                procedurestappenMetIndiener[procedurestap] = [];
+              }
+              // make sure we only set this relation once
+              if (procedurestappenMetIndiener[procedurestap].indexOf(themisUrl) === -1) {
+                procedurestappenMetIndiener[procedurestap].push(themisUrl);
+                // since this one has a mapping, the old one can be deleted
+                let triple = `<${procedurestap}> ext:indiener <${kaleidosMandataris}>`;
+                if (!toDeleteObject[triple]) {
+                  toDeleteObject[triple] = triple;
+                }
+              }
+            }
+            for (const publicatieaangelegenheid of mandataris.publicatieaangelegenheden) {
+              if (!publicatieaangelegenheden[publicatieaangelegenheid]) {
+                publicatieaangelegenheden[publicatieaangelegenheid] = [];
+              }
+              // make sure we only set this relation once
+              if (publicatieaangelegenheden[publicatieaangelegenheid].indexOf(themisUrl) === -1) {
+                publicatieaangelegenheden[publicatieaangelegenheid].push(themisUrl);
+                // since this one has a mapping, the old one can be deleted
+                let triple = `<${publicatieaangelegenheid}> ext:heeftBevoegdeVoorPublicatie <${kaleidosMandataris}>`;
+                if (!toDeleteObject[triple]) {
+                  toDeleteObject[triple] = triple;
+                }
+              }
             }
           }
         }
@@ -491,42 +601,56 @@ app.get('/generatemigrationttl', async function(req, res) {
         ttlString += `.\n`;
       }
     }
-    ttlString = ttlString.replace(/, \./g, ' .');
-    await fsp.writeFile(path.resolve(TTL_EXPORT_FILE_PATH + 'agendapunten.ttl'), ttlString);
-    res.send('.ttl file generated at ' + path.resolve(TTL_EXPORT_FILE_PATH + 'agendapunten.ttl'));
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
-
-/* Generates a .sparql file with a query to remove the old mandataries and their links from the database */
-app.get('/generatemigrationsparql', async function(req, res) {
-  // before we can delete mandataries from the database,
-  // we need to make sure there's no other triples pointing to these mandataries,
-  // or that these links are at least replaced by proper new ones.
-  try {
-    // we need to find out which kaleidos mandataries are going to be replaced by a themis one.
-    // the others remain the same
-    let deprecatedMandatarissen = [];
-    let mappings = await getMappings();
-    if (mappings && Array.isArray(mappings)) {
-      for (const mapping of mappings) {
-        if (mapping.kaleidosMandataris && mapping.themisMandatarissen && Object.keys(mapping.themisMandatarissen).length > 0) {
-          deprecatedMandatarissen.push(mapping.kaleidosMandataris);
+    for (const procedurestap in procedurestappenMetHeeftBevoegde) {
+      if (procedurestappenMetHeeftBevoegde.hasOwnProperty(procedurestap)) {
+        ttlString += `${procedurestap.replace('http://kanselarij.vo.data.gift/id/procedurestappen/', 'procedurestappen:')} ext:heeftBevoegde `;
+        for (const themisMandataris of procedurestappenMetHeeftBevoegde[procedurestap]) {
+          ttlString += `${themisMandataris.replace('http://themis.vlaanderen.be/id/mandataris/', 'mandataris:')}, `;
         }
+        ttlString += `.\n`;
       }
     }
-    // now get all the triples that have this mandataris as subject or object
-    let triples = [];
-    for (const mandataris of deprecatedMandatarissen) {
-      let mandatarisTriples = await getTriplesForMandataris(mandataris);
-      for (const t of mandatarisTriples) {
-        triples.splice(triples.length, 0, t);
+    for (const procedurestap in procedurestappenMetIndiener) {
+      if (procedurestappenMetIndiener.hasOwnProperty(procedurestap)) {
+        ttlString += `${procedurestap.replace('http://kanselarij.vo.data.gift/id/procedurestappen/', 'procedurestappen:')} ext:indiener `;
+        for (const themisMandataris of procedurestappenMetIndiener[procedurestap]) {
+          ttlString += `${themisMandataris.replace('http://themis.vlaanderen.be/id/mandataris/', 'mandataris:')}, `;
+        }
+        ttlString += `.\n`;
       }
     }
-    await fsp.writeFile(path.resolve(SPARQL_EXPORT_FILE_PATH), JSON.stringify(triples, null, ' '));
-    res.send('.sparql file generated at ' + path.resolve(SPARQL_EXPORT_FILE_PATH));
+    for (const publicatieaangelegenheid in publicatieaangelegenheden) {
+      if (publicatieaangelegenheden.hasOwnProperty(publicatieaangelegenheid)) {
+        ttlString += `${publicatieaangelegenheid.replace('http://kanselarij.vo.data.gift/id/publicatie-aangelegenheden/', 'publicatieaangelegenheden:')} ext:heeftBevoegdeVoorPublicatie `;
+        for (const themisMandataris of publicatieaangelegenheden[publicatieaangelegenheid]) {
+          ttlString += `${themisMandataris.replace('http://themis.vlaanderen.be/id/mandataris/', 'mandataris:')}, `;
+        }
+        ttlString += `.\n`;
+      }
+    }
+    ttlString = ttlString.replace(/, \./g, ' .');
+
+    // write the INSERT triples to a file
+    await fsp.writeFile(path.resolve(TTL_EXPORT_FILE_PATH), ttlString);
+    console.log('.ttl file generated at ' + path.resolve(TTL_EXPORT_FILE_PATH));
+
+    // generate the DELETE query
+    let toDelete = Object.keys(toDeleteObject);
+    console.log(`Generating query to delete ${toDelete.length} triples...`);
+    let deleteQuery = `@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+DELETE DATA
+{`;
+    for (const triple of toDelete) {
+      deleteQuery += `${triple} .\n`;
+    }
+    deleteQuery += `}`;
+
+    // write the DELETE query to a file
+    await fsp.writeFile(path.resolve(SPARQL_EXPORT_FILE_PATH), deleteQuery);
+    console.log('.sparql file generated at ' + path.resolve(SPARQL_EXPORT_FILE_PATH));
+    res.send('.ttl file generated at ' + path.resolve(TTL_EXPORT_FILE_PATH) + ' and .sparql file generated at ' + path.resolve(SPARQL_EXPORT_FILE_PATH));
   } catch (e) {
+    console.log(e);
     res.status(500).send(e);
   }
 });

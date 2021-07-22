@@ -346,6 +346,109 @@ export default {
     return results;
   },
 
+  getPublicatieaangelegenheidMatches: async function (includeSamenstelling, baseUrl) {
+    if (!kaleidosData.publicatieaangelegenheden) {
+      return { 'error': 'Query still in progress. Try again later.' };
+    }
+    let totalScore = 0;
+    let totalScoreCount = 0;
+    let themisMandatarissen = {};
+    let kaleidosMandatarissen = {};
+    let publicatieaangelegenheden = {};
+    let results = {
+      meta: {
+        kaleidosTotal: {
+          value: 0,
+          description: 'Total number of unique Kaleidos mandataries associated with the publicatieaangelegenheden.',
+          links: [`${baseUrl}/publicatieaangelegenheden/mandatarissen`]
+        },
+        themisTotal: {
+          value: 0,
+          description: 'Total number of unique Themis mandataries matched with the publicatieaangelegenheden.',
+          links: [`${baseUrl}/regeringen`]
+        },
+        publicatieaangelegenheden: {
+          value: 0,
+          description: 'Total number of unique publicatieaangelegenheden.',
+          links: [`${baseUrl}/publicatieaangelegenheden`]
+        },
+        results: {
+          value: 0,
+          description: 'Total number of matchings.',
+          links: [`${baseUrl}/publicatieaangelegenheden/matchings`, `${baseUrl}/rerunmatching`]
+        },
+        missing: {
+          value: 0,
+          description: 'Number of publicatieaangelegenheden for which no matching mandatary was found in Themis',
+          links: [`${baseUrl}/publicatieaangelegenheden/missingthemismandataris`, `${baseUrl}/publicatieaangelegenheden/missingsamenstelling`, `${baseUrl}/publicatieaangelegenheden/missingdates`]
+        },
+        doubles: {},
+        score: {
+          min: 0,
+          max: 0,
+          avg: 0,
+          description: 'Minumum, maximum, and average score for the matches.'
+        },
+        perfectScoringMatches: {
+          value: 0,
+          description: 'Number of publicatieaangelegenheden that got a Themis match with score 1'
+        }
+      },
+      publicatieaangelegenheden: []
+    };
+    // group them by themis url && generate some statistics
+    for (const publicatieaangelegenheid of kaleidosData.publicatieaangelegenheden) {
+      results.meta.results.value++;
+      if (publicatieaangelegenheid.mandataris) {
+        if (!kaleidosMandatarissen[publicatieaangelegenheid.mandataris]) {
+          results.meta.kaleidosTotal.value++;
+          kaleidosMandatarissen[publicatieaangelegenheid.mandataris] = [];
+        }
+        kaleidosMandatarissen[publicatieaangelegenheid.mandataris].push(publicatieaangelegenheid);
+      }
+      if (publicatieaangelegenheid.themisMandataris) {
+        if (!themisMandatarissen[publicatieaangelegenheid.themisMandataris.mandataris]) {
+          results.meta.themisTotal.value++;
+          themisMandatarissen[publicatieaangelegenheid.themisMandataris.mandataris] = [];
+        }
+        themisMandatarissen[publicatieaangelegenheid.themisMandataris.mandataris].push(publicatieaangelegenheid);
+        if (publicatieaangelegenheid.themisMandataris && publicatieaangelegenheid.themisMandataris.score) {
+          totalScore += publicatieaangelegenheid.themisMandataris.score;
+          totalScoreCount++;
+          if (!results.meta.score.max || publicatieaangelegenheid.themisMandataris.score > results.meta.score.max) {
+            results.meta.score.max = publicatieaangelegenheid.themisMandataris.score;
+          }
+          if (!results.meta.score.min || publicatieaangelegenheid.themisMandataris.score < results.meta.score.min) {
+            results.meta.score.min = publicatieaangelegenheid.themisMandataris.score;
+          }
+          if (publicatieaangelegenheid.themisMandataris.score === 1) {
+            results.meta.perfectScoringMatches.value++;
+          }
+        }
+      } else {
+        results.meta.missing.value++;
+      }
+      // some publicatieaangelegenheden are in the results multiple times, due to multiple hits for the triple patterns in the query
+      if (publicatieaangelegenheid.publicatieaangelegenheid) {
+        if (!publicatieaangelegenheden[publicatieaangelegenheid.publicatieaangelegenheid]) {
+          publicatieaangelegenheden[publicatieaangelegenheid.publicatieaangelegenheid] = [];
+          results.meta.publicatieaangelegenheden.value++;
+        } else {
+          if (!results.meta.doubles[publicatieaangelegenheid.publicatieaangelegenheid]) {
+            results.meta.doubles[publicatieaangelegenheid.publicatieaangelegenheid] = 1;
+          }
+          results.meta.doubles[publicatieaangelegenheid.publicatieaangelegenheid]++;
+        }
+        publicatieaangelegenheden[publicatieaangelegenheid.publicatieaangelegenheid].push(publicatieaangelegenheid);
+      }
+      // don't include the full government composition unless specifically requested, as this makes the result object very heavy
+      results.publicatieaangelegenheden.push({ ...publicatieaangelegenheid, samenstelling: includeSamenstelling ? publicatieaangelegenheid.samenstelling : undefined});
+    }
+    results.meta.score.avg = totalScoreCount ? 1.0 * totalScore / totalScoreCount : 0;
+    delete results.meta.doubles;
+    return results;
+  },
+
   /* Get all triples for all matched mandataries */
   getTriples: async function () {
     if (!kaleidosData.mandatarissen || kaleidosData.mandatarissen.length === 0) {
