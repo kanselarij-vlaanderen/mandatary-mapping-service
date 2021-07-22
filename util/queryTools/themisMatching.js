@@ -5,7 +5,8 @@ const SIMILARITY_THRESHOLDS = {
   name: 0.5,
   familyName: 0.5,
   firstName: 0,
-  titel: 0.5
+  titel: 0.5,
+  total: 0.1
 };
 
 // to clean up the logs a bit
@@ -79,11 +80,11 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds, enable
         // if the titel is set, it MUST match above the threshold
         if (mandataris.titel) {// check if 'minister-president' occurs in the title, but not 'vice'
           let similarity = 0;
-          if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'minister-president') {
-            if (mandataris.normalizedTitel.indexOf('vice') === -1 && (mandataris.normalizedTitel.indexOf('president') > -1 )) {
+          if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'minister-president' || themisMandataris.bestuursfunctieLabel.toLowerCase() === 'voorzitter') {
+            if (mandataris.normalizedTitel.indexOf('vice') === -1 && (mandataris.normalizedTitel.indexOf('president') > -1 || mandataris.normalizedTitel.indexOf('voorzitter') > -1)) {
               similarity = 1;
             }
-          } else if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'viceminister-president') {
+          } else if (themisMandataris.bestuursfunctieLabel.toLowerCase() === 'viceminister-president' || themisMandataris.bestuursfunctieLabel.toLowerCase() === 'vice-voorzitter') {
             if (mandataris.normalizedTitel.indexOf('vice') > -1) {
               similarity = 1;
             }
@@ -122,13 +123,13 @@ const findThemisMandataris = function (mandataris, searchSet, thresholds, enable
           themisMandataris.score = getWeightedScore(themisMandataris.scores);
         }
 
-        if (themisMandataris.score > 0) {
+        if (themisMandataris.score > thresholds.total) {
           possibleMatches.push(themisMandataris);
-        } else {
-          if (mandataris.normalizedTitel === 'vm tewerkstelling en sociale aangelegenheden' && themisMandataris.normalizedTitel === 'vm van tewerkstelling en sociale aangelegendheden') {
-            console.log(mandataris.normalizedFamilyName + ' - '  + mandataris.normalizedTitel + ' ; ' + themisMandataris.normalizedFamilyName + ' - ' + themisMandataris.bestuursfunctieLabel + ' - ' + themisMandataris.normalizedTitel);
-            console.log(JSON.stringify(themisMandataris.scores));
-          }
+        } else if (themisMandataris.score > 0) {
+          console.log('SCORE BELOW THRESHOLD:');
+          console.log(mandataris.normalizedFamilyName + ' - '  + mandataris.normalizedTitel + ' ; ' + themisMandataris.normalizedFamilyName + ' - ' + themisMandataris.bestuursfunctieLabel + ' - ' + themisMandataris.normalizedTitel);
+          console.log(JSON.stringify(themisMandataris.scores));
+          console.log('----------------------');
         }
       }
     }

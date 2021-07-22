@@ -4,7 +4,7 @@ const isOutlier = function (mandataris) {
     mandataris.normalizedName === 'verhofstadt' ||
     mandataris.normalizedName === 'eyskens' ||
     mandataris.normalizedName === 'saeger' ||
-    (mandataris.normalizedName === 'voorzitter' && mandataris.normalizedTitel === 'geens') // http://kanselarij.vo.data.gift/id/mandatarissen/8213290a-dec2-11e9-aa72-0242c0a80002
+    mandataris.normalizedTitel === 'geens' // http://kanselarij.vo.data.gift/id/mandatarissen/8213290a-dec2-11e9-aa72-0242c0a80002
   ) ||
   (mandataris.normalizedTitel && (
     mandataris.normalizedTitel === 'minister staat' || // 'minister van staat' is normalized to this
@@ -27,8 +27,7 @@ const isOutlier = function (mandataris) {
     mandataris.normalizedTitel.indexOf('federaal') > -1 ||
     mandataris.normalizedTitel.indexOf('verkeerswezen') > -1 ||
     mandataris.normalizedTitel.indexOf('gouverneur') > -1 ||
-    mandataris.normalizedTitel.indexOf('secretaris') > -1 ||
-    mandataris.normalizedTitel.indexOf('voorzitter') > -1
+    mandataris.normalizedTitel.indexOf('secretaris') > -1
   ));
 };
 export { isOutlier };

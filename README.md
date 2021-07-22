@@ -22,8 +22,8 @@ mandatary-mapping-service:
   links:
     - triplestore:database
   volumes:
-    - /c/Users/Tom/git/redpencil/mandatary-mapping-service/:/app/
-    - /c/Users/Tom/git/redpencil/data/:/data/
+    - /path/to/mandatary-mapping-service/:/app/
+    - /path/to/data/:/data/
 ```
 
 Note that the `DEV_OS` variable is optional, to enable live reload on Windows.

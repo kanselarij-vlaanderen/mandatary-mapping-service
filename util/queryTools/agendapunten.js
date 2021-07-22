@@ -19,6 +19,7 @@ const getAgendapunten = async function (limit, forceQuery) {
     console.log('No local file with agendapoints found at ' + filePath);
     console.log('Executing agendapoints query...');
   }
+  let agendapunten;
   if (forceQuery || !localFile) {
     const listQuery = `
     PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
@@ -31,54 +32,77 @@ const getAgendapunten = async function (limit, forceQuery) {
     PREFIX dct: <http://purl.org/dc/terms/>
     PREFIX prov: <http://www.w3.org/ns/prov/>
 
-    SELECT DISTINCT ?agendapunt ?meeting ?agenda ?geplandeStart ?agendaPuntAanmaakdatum ?agendaAanmaakdatum ?mandataris WHERE {
+    SELECT DISTINCT ?agendapunt ?meeting ?agenda ?geplandeStart ?agendaPuntAanmaakdatum ?agendaAanmaakdatum ?mandataris ?agendaPuntTitel ?besluit ?procedurestap WHERE {
       GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {
         ?mandataris a mandaat:Mandataris .
         ?agendapunt a besluit:Agendapunt .
         ?agendapunt ext:heeftBevoegdeVoorAgendapunt ?mandataris .
         OPTIONAL { ?agendapunt besluitvorming:aanmaakdatum ?agendaPuntAanmaakdatum } .
+        OPTIONAL { ?agendapunt dct:title ?agendaPuntTitel } .
         ?agenda dct:hasPart ?agendapunt .
         OPTIONAL { ?agenda dct:created ?agendaAanmaakdatum } .
         ?agenda besluitvorming:isAgendaVoor ?meeting .
         OPTIONAL { ?meeting besluit:geplandeStart ?geplandeStart } .
+        OPTIONAL { ?besluit besluitvorming:heeftOnderwerp ?agendapunt } .
+        OPTIONAL { ?besluit ext:beslissingVindtPlaatsTijdens ?procedurestap } .
       }
     } ${limit ? 'LIMIT ' + limit : ''}`;
     let response = await query(listQuery);
-    let agendapunten = parseSparqlResults(response);
+    agendapunten = parseSparqlResults(response);
     if (agendapunten) {
-      let groupedAgendaPoints = {};
-      let groupedMandataries = {};
-
-      // some statistics for the log
-      for (const agendapunt of agendapunten) {
-        if (agendapunt.agendapunt) {
-          if (!groupedAgendaPoints[agendapunt.agendapunt]) {
-            groupedAgendaPoints[agendapunt.agendapunt] = [];
-          }
-          groupedAgendaPoints[agendapunt.agendapunt].push(agendapunt);
-        }
-        if (agendapunt.mandataris) {
-          if (!groupedMandataries[agendapunt.mandataris]) {
-            groupedMandataries[agendapunt.mandataris] = [];
-          }
-          groupedMandataries[agendapunt.mandataris].push(agendapunt.mandataris);
-        }
-      }
-      console.log(`Total: ${Object.keys(groupedAgendaPoints).length} agendapunten, unique mandataries: ${Object.keys(groupedMandataries).length}`);
       // store this response for later use
       if (!localFile) {
         console.log('Writing agendapoints to ' + filePath);
         await fsp.writeFile(filePath, JSON.stringify(agendapunten));
       }
-      return agendapunten;
     } else {
       console.log(response);
     }
   } else if (localFile) {
     console.log('Local file with agendapoints found at ' + filePath);
-    let agendapunten = JSON.parse(localFile);
-    return agendapunten;
+    agendapunten = JSON.parse(localFile);
   }
+  // print some stats
+  if (agendapunten) {
+    let groupedAgendaPoints = {};
+    let groupedMandataries = {};
+
+    // some statistics for the log
+    for (const agendapunt of agendapunten) {
+      if (agendapunt.agendapunt) {
+        if (!groupedAgendaPoints[agendapunt.agendapunt]) {
+          groupedAgendaPoints[agendapunt.agendapunt] = [];
+        }
+        groupedAgendaPoints[agendapunt.agendapunt].push(agendapunt);
+      }
+      if (agendapunt.mandataris) {
+        if (!groupedMandataries[agendapunt.mandataris]) {
+          groupedMandataries[agendapunt.mandataris] = [];
+        }
+        groupedMandataries[agendapunt.mandataris].push(agendapunt.mandataris);
+      }
+    }
+    console.log(`Total: ${agendapunten.length} agendapunten, ${Object.keys(groupedAgendaPoints).length} unique ones, referencing unique mandataries: ${Object.keys(groupedMandataries).length}`);
+  }
+  return agendapunten;
 };
 
-export { getAgendapunten };
+/* Gets the zitting and agenda urls for an agendapunt url */
+const getMeetingAndAgenda = async function (agendapunt) {
+  const getQuery = `
+  PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
+  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX agendapunten: <http://kanselarij.vo.data.gift/id/agendapunten/>
+
+  select * where {
+    GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {
+          ?agenda dct:hasPart <${agendapunt}> .
+          ?agenda besluitvorming:isAgendaVoor ?meeting .
+        }
+  }`;
+  let response = await query(getQuery);
+  let responseData = parseSparqlResults(response);
+  return responseData;
+};
+
+export { getAgendapunten, getMeetingAndAgenda };

@@ -98,6 +98,7 @@ const createLookupDatasets = function () {
       regeringsLabel: mandataris.regeringsLabel,
       regeringsDuurVan: mandataris.van,
       regeringsDuurTot: mandataris.tot,
+      regering: mandataris.regering,
       start: mandataris.start,
       einde: mandataris.einde,
       normalizedName: mandataris.voornaam && mandataris.familienaam? normalizeString(mandataris.voornaam + ' ' + mandataris.familienaam, 'name') : undefined,
