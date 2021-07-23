@@ -560,11 +560,11 @@ app.get('/generatemigration', async function(req, res) {
               if (procedurestappenMetHeeftBevoegde[procedurestap].indexOf(themisUrl) === -1) {
                 procedurestappenMetHeeftBevoegde[procedurestap].push(themisUrl);
                 // since this one has a mapping, the old one can be deleted
-                if (!procedurestappenMetHeeftBevoegde[procedurestap]) {
-                  procedurestappenMetHeeftBevoegde[procedurestap] = [];
+                if (!procedurestappenMetHeeftBevoegdeToDelete[procedurestap]) {
+                  procedurestappenMetHeeftBevoegdeToDelete[procedurestap] = [];
                 }
-                if (procedurestappenMetHeeftBevoegde[procedurestap].indexOf(kaleidosMandataris) === -1) {
-                  procedurestappenMetHeeftBevoegde[procedurestap].push(kaleidosMandataris);
+                if (procedurestappenMetHeeftBevoegdeToDelete[procedurestap].indexOf(kaleidosMandataris) === -1) {
+                  procedurestappenMetHeeftBevoegdeToDelete[procedurestap].push(kaleidosMandataris);
                 }
               }
             }
