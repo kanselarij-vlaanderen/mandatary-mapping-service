@@ -10,8 +10,9 @@ import * as path from 'path';
 
 const MAPPING_EXPORT_FILE_PATH = '/data/mapping_export.csv';
 const TTL_EXPORT_FILE_PATH = '/data/insert_mandataries.ttl';
-const SPARQL_EXPORT_FILE_PATH = '/data/delete_mandataries.sparql';
+const SPARQL_EXPORT_FILE_PATH = '/data/delete_mandataries';
 const MISSING_EXPORT_FILE_PATH = '/data/missing_export.csv';
+const DELETE_QUERY_BATCH_SIZE = 9000; // virtuoso's limit on SPARQL query lines seems to be 10000 https://www.mail-archive.com/virtuoso-users@lists.sourceforge.net/msg07020.html
 
 const getBaseUrl = function (req) {
   return `${req.protocol}://${req.get('host')}`;
@@ -525,7 +526,10 @@ app.get('/generatemigration', async function(req, res) {
     let procedurestappenMetHeeftBevoegde = {};
     let procedurestappenMetIndiener = {};
     let publicatieaangelegenheden = {};
-    let toDeleteObject = {};
+    let agendapuntenToDelete = {};
+    let procedurestappenMetHeeftBevoegdeToDelete = {};
+    let procedurestappenMetIndienerToDelete = {};
+    let publicatieaangelegenhedenToDelete = {};
     if (mappings && Array.isArray(mappings)) {
       for (const mapping of mappings) {
         const kaleidosMandataris = mapping.kaleidosMandataris.mandataris;
@@ -540,9 +544,11 @@ app.get('/generatemigration', async function(req, res) {
               if (agendapunten[agendapunt].indexOf(themisUrl) === -1) {
                 agendapunten[agendapunt].push(themisUrl);
                 // since this one has a mapping, the old one can be deleted
-                let triple = `<${agendapunt}> ext:heeftBevoegdeVoorAgendapunt <${kaleidosMandataris}>`;
-                if (!toDeleteObject[triple]) { // an array with indexOf gets bigger and bigger, resulting in a huge performance drop as the list grows. This way is much faster
-                  toDeleteObject[triple] = triple;
+                if (!agendapuntenToDelete[agendapunt]) {
+                  agendapuntenToDelete[agendapunt] = [];
+                }
+                if (agendapuntenToDelete[agendapunt].indexOf(kaleidosMandataris) === -1) {
+                  agendapuntenToDelete[agendapunt].push(kaleidosMandataris);
                 }
               }
             }
@@ -554,9 +560,11 @@ app.get('/generatemigration', async function(req, res) {
               if (procedurestappenMetHeeftBevoegde[procedurestap].indexOf(themisUrl) === -1) {
                 procedurestappenMetHeeftBevoegde[procedurestap].push(themisUrl);
                 // since this one has a mapping, the old one can be deleted
-                let triple = `<${procedurestap}> ext:heeftBevoegde <${kaleidosMandataris}>`;
-                if (!toDeleteObject[triple]) {
-                  toDeleteObject[triple] = triple;
+                if (!procedurestappenMetHeeftBevoegde[procedurestap]) {
+                  procedurestappenMetHeeftBevoegde[procedurestap] = [];
+                }
+                if (procedurestappenMetHeeftBevoegde[procedurestap].indexOf(kaleidosMandataris) === -1) {
+                  procedurestappenMetHeeftBevoegde[procedurestap].push(kaleidosMandataris);
                 }
               }
             }
@@ -568,9 +576,11 @@ app.get('/generatemigration', async function(req, res) {
               if (procedurestappenMetIndiener[procedurestap].indexOf(themisUrl) === -1) {
                 procedurestappenMetIndiener[procedurestap].push(themisUrl);
                 // since this one has a mapping, the old one can be deleted
-                let triple = `<${procedurestap}> ext:indiener <${kaleidosMandataris}>`;
-                if (!toDeleteObject[triple]) {
-                  toDeleteObject[triple] = triple;
+                if (!procedurestappenMetIndienerToDelete[procedurestap]) {
+                  procedurestappenMetIndienerToDelete[procedurestap] = [];
+                }
+                if (procedurestappenMetIndienerToDelete[procedurestap].indexOf(kaleidosMandataris) === -1) {
+                  procedurestappenMetIndienerToDelete[procedurestap].push(kaleidosMandataris);
                 }
               }
             }
@@ -582,9 +592,12 @@ app.get('/generatemigration', async function(req, res) {
               if (publicatieaangelegenheden[publicatieaangelegenheid].indexOf(themisUrl) === -1) {
                 publicatieaangelegenheden[publicatieaangelegenheid].push(themisUrl);
                 // since this one has a mapping, the old one can be deleted
-                let triple = `<${publicatieaangelegenheid}> ext:heeftBevoegdeVoorPublicatie <${kaleidosMandataris}>`;
-                if (!toDeleteObject[triple]) {
-                  toDeleteObject[triple] = triple;
+                if (!publicatieaangelegenhedenToDelete[publicatieaangelegenheid]) {
+                  // an array with indexOf gets bigger and bigger, resulting in a huge performance drop as the list grows. This way is much faster
+                  publicatieaangelegenhedenToDelete[publicatieaangelegenheid] = [];
+                }
+                if (publicatieaangelegenhedenToDelete[publicatieaangelegenheid].indexOf(kaleidosMandataris) === -1) {
+                  publicatieaangelegenhedenToDelete[publicatieaangelegenheid].push(kaleidosMandataris);
                 }
               }
             }
@@ -634,21 +647,91 @@ app.get('/generatemigration', async function(req, res) {
     await fsp.writeFile(path.resolve(TTL_EXPORT_FILE_PATH), ttlString);
     console.log('.ttl file generated at ' + path.resolve(TTL_EXPORT_FILE_PATH));
 
-    // generate the DELETE query
-    let toDelete = Object.keys(toDeleteObject);
-    console.log(`Generating query to delete ${toDelete.length} triples...`);
+    // generate the DELETE queries, in batches
+    let deleteLines = [];
+    let deleteCount = 0;
+    for (let subject in agendapuntenToDelete) {
+      if (agendapuntenToDelete.hasOwnProperty(subject)) {
+        if (agendapuntenToDelete[subject].length > 0) {
+          let line = `<${subject}> ext:heeftBevoegdeVoorAgendapunt `;
+          for (let object of agendapuntenToDelete[subject]) {
+            line += `<${object}>, `;
+            deleteCount++;
+          }
+          line = line.substring(0, line.length - 2) + ' .\n';
+          deleteLines.push(line);
+        }
+      }
+    }
+    for (let subject in procedurestappenMetHeeftBevoegdeToDelete) {
+      if (procedurestappenMetHeeftBevoegdeToDelete.hasOwnProperty(subject)) {
+        if (procedurestappenMetHeeftBevoegdeToDelete[subject].length > 0) {
+          let line = `<${subject}> ext:heeftBevoegde `;
+          for (let object of procedurestappenMetHeeftBevoegdeToDelete[subject]) {
+            line += `<${object}>, `;
+            deleteCount++;
+          }
+          line = line.substring(0, line.length - 2) + ' .\n';
+          deleteLines.push(line);
+        }
+      }
+    }
+    for (let subject in procedurestappenMetIndienerToDelete) {
+      if (procedurestappenMetIndienerToDelete.hasOwnProperty(subject)) {
+        if (procedurestappenMetIndienerToDelete[subject].length > 0) {
+          let line = `<${subject}> ext:indiener `;
+          for (let object of procedurestappenMetIndienerToDelete[subject]) {
+            line += `<${object}>, `;
+            deleteCount++;
+          }
+          line = line.substring(0, line.length - 2) + ' .\n';
+          deleteLines.push(line);
+        }
+      }
+    }
+    for (let subject in publicatieaangelegenhedenToDelete) {
+      if (publicatieaangelegenhedenToDelete.hasOwnProperty(subject)) {
+        if (publicatieaangelegenhedenToDelete[subject].length > 0) {
+          let line = `<${subject}> ext:heeftBevoegdeVoorPublicatie `;
+          for (let object of publicatieaangelegenhedenToDelete[subject]) {
+            line += `<${object}>, `;
+            deleteCount++;
+          }
+          line = line.substring(0, line.length - 2) + ' .\n';
+          deleteLines.push(line);
+        }
+      }
+    }
+    console.log(`Generating queries to delete ${deleteCount} triples...`);
+
+    let lineCount = 0;
+    let batchCount = 0;
     let deleteQuery = `@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
 DELETE DATA
-{`;
-    for (const triple of toDelete) {
-      deleteQuery += `${triple} .\n`;
+{\n`;
+    for (let line of deleteLines) {
+      if (lineCount < DELETE_QUERY_BATCH_SIZE) {
+        deleteQuery += line;
+        lineCount++;
+      } else {
+        deleteQuery += `}`;
+        // write the DELETE query to a file
+        batchCount++;
+        await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
+        console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
+        deleteQuery = `@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+DELETE DATA
+{\n`;
+        lineCount = 0;
+      }
     }
     deleteQuery += `}`;
+    // write the final DELETE query to a file
+    batchCount++;
+    await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
 
-    // write the DELETE query to a file
-    await fsp.writeFile(path.resolve(SPARQL_EXPORT_FILE_PATH), deleteQuery);
-    console.log('.sparql file generated at ' + path.resolve(SPARQL_EXPORT_FILE_PATH));
-    res.send('.ttl file generated at ' + path.resolve(TTL_EXPORT_FILE_PATH) + ' and .sparql file generated at ' + path.resolve(SPARQL_EXPORT_FILE_PATH));
+    console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
+    res.send(`.ttl file generated at ${path.resolve(TTL_EXPORT_FILE_PATH)} and .sparql files generated at ${path.resolve(SPARQL_EXPORT_FILE_PATH)} (${batchCount} batches)`);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
