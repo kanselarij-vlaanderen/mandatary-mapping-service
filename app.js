@@ -706,26 +706,28 @@ app.get('/generatemigration', async function(req, res) {
 
     let lineCount = 0;
     let batchCount = 0;
-    let deleteQuery = `@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+    let deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 DELETE DATA
-{\n`;
+{
+  GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {\n`;
     for (let line of deleteLines) {
       if (lineCount < DELETE_QUERY_BATCH_SIZE) {
         deleteQuery += line;
         lineCount++;
       } else {
-        deleteQuery += `}`;
+        deleteQuery += `}\n}`;
         // write the DELETE query to a file
         batchCount++;
         await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
         console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
-        deleteQuery = `@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+        deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 DELETE DATA
-{\n`;
+{
+  GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {\n`;
         lineCount = 0;
       }
     }
-    deleteQuery += `}`;
+    deleteQuery += `}\n}`;
     // write the final DELETE query to a file
     batchCount++;
     await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
