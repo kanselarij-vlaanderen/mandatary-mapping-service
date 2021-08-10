@@ -707,27 +707,33 @@ app.get('/generatemigration', async function(req, res) {
     let lineCount = 0;
     let batchCount = 0;
     let deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+WITH <http://mu.semte.ch/graphs/organizations/kanselarij>
+WITH <http://mu.semte.ch/graphs/organizations/minister>
+WITH <http://mu.semte.ch/graphs/organizations/intern-regering>
+WITH <http://mu.semte.ch/graphs/organizations/intern-overheid>
 DELETE DATA
-{
-  GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {\n`;
+{\n`;
     for (let line of deleteLines) {
       if (lineCount < DELETE_QUERY_BATCH_SIZE) {
         deleteQuery += line;
         lineCount++;
       } else {
-        deleteQuery += `}\n}`;
+        deleteQuery += `\n}`;
         // write the DELETE query to a file
         batchCount++;
         await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
         console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
         deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+WITH <http://mu.semte.ch/graphs/organizations/kanselarij>
+WITH <http://mu.semte.ch/graphs/organizations/minister>
+WITH <http://mu.semte.ch/graphs/organizations/intern-regering>
+WITH <http://mu.semte.ch/graphs/organizations/intern-overheid>
 DELETE DATA
-{
-  GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {\n`;
+{\n`;
         lineCount = 0;
       }
     }
-    deleteQuery += `}\n}`;
+    deleteQuery += `\n}`;
     // write the final DELETE query to a file
     batchCount++;
     await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
