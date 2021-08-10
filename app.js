@@ -607,41 +607,32 @@ app.get('/generatemigration', async function(req, res) {
     }
     for (const agendapunt in agendapunten) {
       if (agendapunten.hasOwnProperty(agendapunt)) {
-        ttlString += `${agendapunt.replace('http://kanselarij.vo.data.gift/id/agendapunten/', 'agendapunten:')} ext:heeftBevoegdeVoorAgendapunt `;
-        for (const themisMandataris of agendapunten[agendapunt]) {
-          ttlString += `${themisMandataris.replace('http://themis.vlaanderen.be/id/mandataris/', 'mandataris:')}, `;
-        }
-        ttlString += `.\n`;
+        ttlString += `<${agendapunt}> ext:heeftBevoegdeVoorAgendapunt `;
+        const objects = agendapunten[agendapunt].map(uri => `<${uri}>`).join(', ');
+        ttlString += `${objects} .\n`;
       }
     }
     for (const procedurestap in procedurestappenMetHeeftBevoegde) {
       if (procedurestappenMetHeeftBevoegde.hasOwnProperty(procedurestap)) {
-        ttlString += `${procedurestap.replace('http://kanselarij.vo.data.gift/id/procedurestappen/', 'procedurestappen:')} ext:heeftBevoegde `;
-        for (const themisMandataris of procedurestappenMetHeeftBevoegde[procedurestap]) {
-          ttlString += `${themisMandataris.replace('http://themis.vlaanderen.be/id/mandataris/', 'mandataris:')}, `;
-        }
-        ttlString += `.\n`;
+        ttlString += `<${procedurestap}> ext:heeftBevoegde `;
+        const objects = procedurestappenMetHeeftBevoegde[procedurestap].map(uri => `<${uri}>`).join(', ');
+        ttlString += `${objects} .\n`;
       }
     }
     for (const procedurestap in procedurestappenMetIndiener) {
       if (procedurestappenMetIndiener.hasOwnProperty(procedurestap)) {
-        ttlString += `${procedurestap.replace('http://kanselarij.vo.data.gift/id/procedurestappen/', 'procedurestappen:')} ext:indiener `;
-        for (const themisMandataris of procedurestappenMetIndiener[procedurestap]) {
-          ttlString += `${themisMandataris.replace('http://themis.vlaanderen.be/id/mandataris/', 'mandataris:')}, `;
-        }
-        ttlString += `.\n`;
+        ttlString += `<${procedurestap}> ext:indiener `;
+        const objects = procedurestappenMetIndiener[procedurestap].map(uri => `<${uri}>`).join(', ');
+        ttlString += `${objects} .\n`;
       }
     }
     for (const publicatieaangelegenheid in publicatieaangelegenheden) {
       if (publicatieaangelegenheden.hasOwnProperty(publicatieaangelegenheid)) {
-        ttlString += `${publicatieaangelegenheid.replace('http://kanselarij.vo.data.gift/id/publicatie-aangelegenheden/', 'publicatieaangelegenheden:')} ext:heeftBevoegdeVoorPublicatie `;
-        for (const themisMandataris of publicatieaangelegenheden[publicatieaangelegenheid]) {
-          ttlString += `${themisMandataris.replace('http://themis.vlaanderen.be/id/mandataris/', 'mandataris:')}, `;
-        }
-        ttlString += `.\n`;
+        ttlString += `<${publicatieaangelegenheid}> ext:heeftBevoegdeVoorPublicatie `;
+        const objects = publicatieaangelegenheden[publicatieaangelegenheid].map(uri => `<${uri}>`).join(', ');
+        ttlString += `${objects} .\n`;
       }
     }
-    ttlString = ttlString.replace(/, \./g, ' .');
 
     // write the INSERT triples to a file
     await fsp.writeFile(path.resolve(TTL_EXPORT_FILE_PATH), ttlString);
