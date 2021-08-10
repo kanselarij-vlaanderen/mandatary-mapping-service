@@ -9,10 +9,16 @@ import { promises as fsp } from 'fs';
 import * as path from 'path';
 
 const MAPPING_EXPORT_FILE_PATH = '/data/mapping_export.csv';
-const TTL_EXPORT_FILE_PATH = '/data/insert_mandataries.ttl';
+const TTL_EXPORT_FILE_BASE_PATH = '/data/insert_mandataries';
 const SPARQL_EXPORT_FILE_PATH = '/data/delete_mandataries';
 const MISSING_EXPORT_FILE_PATH = '/data/missing_export.csv';
 const DELETE_QUERY_BATCH_SIZE = 9000; // virtuoso's limit on SPARQL query lines seems to be 10000 https://www.mail-archive.com/virtuoso-users@lists.sourceforge.net/msg07020.html
+const TARGET_GRAPHS = [
+  'http://mu.semte.ch/graphs/organizations/kanselarij',
+  'http://mu.semte.ch/graphs/organizations/minister',
+  'http://mu.semte.ch/graphs/organizations/intern-regering',
+  'http://mu.semte.ch/graphs/organizations/intern-overheid'
+];
 
 const getBaseUrl = function (req) {
   return `${req.protocol}://${req.get('host')}`;
@@ -635,8 +641,14 @@ app.get('/generatemigration', async function(req, res) {
     }
 
     // write the INSERT triples to a file
-    await fsp.writeFile(path.resolve(TTL_EXPORT_FILE_PATH), ttlString);
-    console.log('.ttl file generated at ' + path.resolve(TTL_EXPORT_FILE_PATH));
+    for (let graph of TARGET_GRAPHS) {
+      const organization = graph.split('/').slice(-1)[0];
+      const ttlFile = `${TTL_EXPORT_FILE_BASE_PATH}-${organization}.ttl`;
+      await fsp.writeFile(path.resolve(ttlFile), ttlString);
+      console.log('.ttl file generated at ' + path.resolve(ttlFile));
+      const graphFile = ttlFile.replace('.ttl', '.graph');
+      await fsp.writeFile(path.resolve(graphFile), graph);
+    }
 
     // generate the DELETE queries, in batches
     let deleteLines = [];
@@ -698,10 +710,7 @@ app.get('/generatemigration', async function(req, res) {
     let lineCount = 0;
     let batchCount = 0;
     let deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-WITH <http://mu.semte.ch/graphs/organizations/kanselarij>
-WITH <http://mu.semte.ch/graphs/organizations/minister>
-WITH <http://mu.semte.ch/graphs/organizations/intern-regering>
-WITH <http://mu.semte.ch/graphs/organizations/intern-overheid>
+${TARGET_GRAPHS.map(uri => `WITH <${uri}>`).join('\n')}
 DELETE DATA
 {\n`;
     for (let line of deleteLines) {
@@ -715,10 +724,7 @@ DELETE DATA
         await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
         console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
         deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-WITH <http://mu.semte.ch/graphs/organizations/kanselarij>
-WITH <http://mu.semte.ch/graphs/organizations/minister>
-WITH <http://mu.semte.ch/graphs/organizations/intern-regering>
-WITH <http://mu.semte.ch/graphs/organizations/intern-overheid>
+${TARGET_GRAPHS.map(uri => `WITH <${uri}>`).join('\n')}
 DELETE DATA
 {\n`;
         lineCount = 0;
@@ -730,7 +736,7 @@ DELETE DATA
     await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
 
     console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
-    res.send(`.ttl file generated at ${path.resolve(TTL_EXPORT_FILE_PATH)} and .sparql files generated at ${path.resolve(SPARQL_EXPORT_FILE_PATH)} (${batchCount} batches)`);
+    res.send(`.ttl file generated at ${path.resolve(TTL_EXPORT_FILE_BASE_PATH)}*.{ttl,graph} and .sparql files generated at ${path.resolve(SPARQL_EXPORT_FILE_PATH)}*.sparql (${batchCount} batches)`);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
