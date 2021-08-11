@@ -254,7 +254,12 @@ app.get('/agendapunt/matchings', async function(req, res) {
   if (!matchings.agendapunten) {
     return res.send('Query not finished yet. Try again later.');
   }
-  matchings.agendapunten = matchings.agendapunten.filter((agendapunt) => { return agendapunt.themisMandataris !== undefined; });
+  matchings.agendapunten = matchings.agendapunten.filter((agendapunt) => {
+    if (req.query && req.query.minScore !== undefined) {
+      return agendapunt.themisMandataris !== undefined && agendapunt.themisMandataris.score >= +req.query.minScore;
+    }
+    return agendapunt.themisMandataris !== undefined;
+  });
   if (req.query && req.query.sortBy) {
     sort(matchings.agendapunten, req.query.sortBy, req.query.order);
   }
@@ -304,7 +309,12 @@ app.get('/procedurestap/matchings', async function(req, res) {
   if (!matchings.procedurestappen) {
     return res.send('Query not finished yet. Try again later.');
   }
-  matchings.procedurestappen = matchings.procedurestappen.filter((procedurestap) => { return procedurestap.themisMandataris !== undefined; });
+  matchings.procedurestappen = matchings.procedurestappen.filter((procedurestap) => {
+    if (req.query && req.query.minScore !== undefined) {
+      return procedurestap.themisMandataris !== undefined && procedurestap.themisMandataris.score >= +req.query.minScore;
+    }
+    return procedurestap.themisMandataris !== undefined;
+  });
   if (req.query && req.query.sortBy) {
     sort(matchings.procedurestappen, req.query.sortBy, req.query.order);
   }
