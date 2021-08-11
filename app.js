@@ -707,35 +707,38 @@ app.get('/generatemigration', async function(req, res) {
     }
     console.log(`Generating queries to delete ${deleteCount} triples...`);
 
-    let lineCount = 0;
-    let batchCount = 0;
-    let deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-${TARGET_GRAPHS.map(uri => `WITH <${uri}>`).join('\n')}
+    for (let graph of TARGET_GRAPHS) {
+      const organization = graph.split('/').slice(-1)[0];
+      let lineCount = 0;
+      let batchCount = 0;
+      let deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+WITH <${graph}>
 DELETE DATA
 {\n`;
-    for (let line of deleteLines) {
-      if (lineCount < DELETE_QUERY_BATCH_SIZE) {
-        deleteQuery += line;
-        lineCount++;
-      } else {
-        deleteQuery += `\n}`;
-        // write the DELETE query to a file
-        batchCount++;
-        await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
-        console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
-        deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-${TARGET_GRAPHS.map(uri => `WITH <${uri}>`).join('\n')}
+      for (let line of deleteLines) {
+        if (lineCount < DELETE_QUERY_BATCH_SIZE) {
+          deleteQuery += line;
+          lineCount++;
+        } else {
+          deleteQuery += `\n}`;
+          // write the DELETE query to a file
+          batchCount++;
+          await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}-${organization}-batch${batchCount}.sparql`), deleteQuery);
+          console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
+          deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+WITH <${graph}>
 DELETE DATA
 {\n`;
-        lineCount = 0;
+          lineCount = 0;
+        }
       }
-    }
-    deleteQuery += `\n}`;
-    // write the final DELETE query to a file
-    batchCount++;
-    await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
+      deleteQuery += `\n}`;
+      // write the final DELETE query to a file
+      batchCount++;
+      await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}-${organization}-batch${batchCount}.sparql`), deleteQuery);
 
-    console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
+      console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}-${organization}-batch${batchCount}.sparql`));
+    }
 
     console.log(`Generating query to cleanup orphaned triples...`);
     const cleanupOrphansQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
@@ -769,7 +772,7 @@ DELETE {
     await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}-cleanup-orphans.sparql`), cleanupOrphansQuery);
     console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}-cleanup-orphans.sparql`));
 
-    res.send(`.ttl file generated at ${path.resolve(TTL_EXPORT_FILE_BASE_PATH)}*.{ttl,graph} and .sparql files generated at ${path.resolve(SPARQL_EXPORT_FILE_PATH)}*.sparql (${batchCount} batches)`);
+    res.send(`.ttl file generated at ${path.resolve(TTL_EXPORT_FILE_BASE_PATH)}*.{ttl,graph} and .sparql files generated at ${path.resolve(SPARQL_EXPORT_FILE_PATH)}*.sparql`);
 
   } catch (e) {
     console.log(e);
