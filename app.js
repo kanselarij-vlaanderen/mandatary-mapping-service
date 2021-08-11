@@ -9,8 +9,7 @@ import { promises as fsp } from 'fs';
 import * as path from 'path';
 
 const MAPPING_EXPORT_FILE_PATH = '/data/mapping_export.csv';
-const TTL_EXPORT_FILE_BASE_PATH = '/data/insert_mandataries';
-const SPARQL_EXPORT_FILE_PATH = '/data/delete_mandataries';
+const EXPORT_FILE_BASE_PATH = '/data/';
 const MISSING_EXPORT_FILE_PATH = '/data/missing_export.csv';
 const DELETE_QUERY_BATCH_SIZE = 9000; // virtuoso's limit on SPARQL query lines seems to be 10000 https://www.mail-archive.com/virtuoso-users@lists.sourceforge.net/msg07020.html
 const TARGET_GRAPHS = [
@@ -641,9 +640,10 @@ app.get('/generatemigration', async function(req, res) {
     }
 
     // write the INSERT triples to a file
+    let timestamp = new Date().toISOString().replace(/[-,T,:]/g, '').split('.')[0];
     for (let graph of TARGET_GRAPHS) {
       const organization = graph.split('/').slice(-1)[0];
-      const ttlFile = `${TTL_EXPORT_FILE_BASE_PATH}-${organization}.ttl`;
+      const ttlFile = `${EXPORT_FILE_BASE_PATH}${timestamp}-insert-mandataries-${organization}.ttl`;
       await fsp.writeFile(path.resolve(ttlFile), ttlString);
       console.log('.ttl file generated at ' + path.resolve(ttlFile));
       const graphFile = ttlFile.replace('.ttl', '.graph');
@@ -707,6 +707,7 @@ app.get('/generatemigration', async function(req, res) {
     }
     console.log(`Generating queries to delete ${deleteCount} triples...`);
 
+    timestamp = new Date().toISOString().replace(/[-,T,:]/g, '').split('.')[0];
     for (let graph of TARGET_GRAPHS) {
       const organization = graph.split('/').slice(-1)[0];
       let lineCount = 0;
@@ -723,8 +724,9 @@ DELETE DATA
           deleteQuery += `\n}`;
           // write the DELETE query to a file
           batchCount++;
-          await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}-${organization}-batch${batchCount}.sparql`), deleteQuery);
-          console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
+          const sparqlFile = `${EXPORT_FILE_BASE_PATH}${timestamp}-delete-mandataries-${organization}-batch-${batchCount}.sparql`;
+          await fsp.writeFile(path.resolve(sparqlFile), deleteQuery);
+          console.log('.sparql file generated at ' + sparqlFile);
           deleteQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 WITH <${graph}>
 DELETE DATA
@@ -735,9 +737,9 @@ DELETE DATA
       deleteQuery += `\n}`;
       // write the final DELETE query to a file
       batchCount++;
-      await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}-${organization}-batch${batchCount}.sparql`), deleteQuery);
-
-      console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}-${organization}-batch${batchCount}.sparql`));
+      const sparqlFile = `${EXPORT_FILE_BASE_PATH}${timestamp}-delete-mandataries-${organization}-batch-${batchCount}.sparql`;
+      await fsp.writeFile(path.resolve(sparqlFile), deleteQuery);
+      console.log('.sparql file generated at ' + sparqlFile);
     }
 
     console.log(`Generating query to cleanup orphaned triples...`);
@@ -769,11 +771,12 @@ DELETE {
     ${TARGET_GRAPHS.map(uri => `<${uri}>`).join('\n')}
   }
 }`;
-    await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}-cleanup-orphans.sparql`), cleanupOrphansQuery);
-    console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}-cleanup-orphans.sparql`));
+    timestamp = new Date().toISOString().replace(/[-,T,:]/g, '').split('.')[0];
+    const sparqlFile = `${EXPORT_FILE_BASE_PATH}${timestamp}-cleanup-orphans.sparql`;
+    await fsp.writeFile(path.resolve(sparqlFile), cleanupOrphansQuery);
+    console.log('.sparql file generated at ' + sparqlFile);
 
-    res.send(`.ttl file generated at ${path.resolve(TTL_EXPORT_FILE_BASE_PATH)}*.{ttl,graph} and .sparql files generated at ${path.resolve(SPARQL_EXPORT_FILE_PATH)}*.sparql`);
-
+    res.send(`Files generated at ${path.resolve(EXPORT_FILE_BASE_PATH)}*.{ttl,graph,sparql}`);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
