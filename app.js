@@ -11,7 +11,7 @@ import * as path from 'path';
 const MAPPING_EXPORT_FILE_PATH = '/data/mapping_export.csv';
 const EXPORT_FILE_BASE_PATH = '/data/';
 const MISSING_EXPORT_FILE_PATH = '/data/missing_export.csv';
-const DELETE_QUERY_BATCH_SIZE = 9000; // virtuoso's limit on SPARQL query lines seems to be 10000 https://www.mail-archive.com/virtuoso-users@lists.sourceforge.net/msg07020.html
+const DELETE_QUERY_BATCH_SIZE = 1000; // virtuoso's limit on SPARQL query lines seems to be 10000 https://www.mail-archive.com/virtuoso-users@lists.sourceforge.net/msg07020.html
 const TARGET_GRAPHS = [
   'http://mu.semte.ch/graphs/organizations/kanselarij',
   'http://mu.semte.ch/graphs/organizations/minister',

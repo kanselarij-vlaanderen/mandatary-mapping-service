@@ -16,8 +16,8 @@ const getProcedurestappen = async function (limit, forceQuery) {
   try {
     localFile = await fsp.readFile(filePath);
   } catch (e) {
-    console.log('No local file with agendapoints found at ' + filePath);
-    console.log('Executing agendapoints query...');
+    console.log('No local file with proceduresteps found at ' + filePath);
+    console.log('Executing proceduresteps query...');
   }
   let procedurestappen;
   if (forceQuery || !localFile) {
@@ -41,8 +41,10 @@ const getProcedurestappen = async function (limit, forceQuery) {
         OPTIONAL { ?procedurestap dct:alternative ?alternative } .
         OPTIONAL { ?procedurestap ext:procedurestapNaam ?procedurestapNaam } .
         OPTIONAL { ?dossier dossier:doorloopt ?procedurestap } .
-        OPTIONAL { ?besluit ext:beslissingVindtPlaatsTijdens ?procedurestap } .
-        OPTIONAL { ?besluit besluitvorming:heeftOnderwerp ?agendapunt } .
+        OPTIONAL {
+          ?besluit ext:beslissingVindtPlaatsTijdens ?procedurestap .
+          OPTIONAL { ?besluit besluitvorming:heeftOnderwerp ?agendapunt } .
+        }
       }
     } ${limit ? 'LIMIT ' + limit : ''}`;
     let response = await query(listQuery);

@@ -37,14 +37,16 @@ const getAgendapunten = async function (limit, forceQuery) {
         ?mandataris a mandaat:Mandataris .
         ?agendapunt a besluit:Agendapunt .
         ?agendapunt ext:heeftBevoegdeVoorAgendapunt ?mandataris .
+        ?agenda dct:hasPart ?agendapunt .
+        ?agenda besluitvorming:isAgendaVoor ?meeting .
         OPTIONAL { ?agendapunt besluitvorming:aanmaakdatum ?agendaPuntAanmaakdatum } .
         OPTIONAL { ?agendapunt dct:title ?agendaPuntTitel } .
-        ?agenda dct:hasPart ?agendapunt .
         OPTIONAL { ?agenda dct:created ?agendaAanmaakdatum } .
-        ?agenda besluitvorming:isAgendaVoor ?meeting .
         OPTIONAL { ?meeting besluit:geplandeStart ?geplandeStart } .
-        OPTIONAL { ?besluit besluitvorming:heeftOnderwerp ?agendapunt } .
-        OPTIONAL { ?besluit ext:beslissingVindtPlaatsTijdens ?procedurestap } .
+        OPTIONAL {
+          ?besluit besluitvorming:heeftOnderwerp ?agendapunt .
+          OPTIONAL { ?besluit ext:beslissingVindtPlaatsTijdens ?procedurestap } .
+        }
       }
     } ${limit ? 'LIMIT ' + limit : ''}`;
     let response = await query(listQuery);
