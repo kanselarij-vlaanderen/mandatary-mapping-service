@@ -736,7 +736,41 @@ DELETE DATA
     await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`), deleteQuery);
 
     console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}.batch${batchCount}.sparql`));
+
+    console.log(`Generating query to cleanup orphaned triples...`);
+    const cleanupOrphansQuery = `PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+DELETE {
+  GRAPH ?g {
+    ?s ?p ?o .
+  }
+} WHERE {
+  GRAPH ?g {
+    ?s ?p ?o .
+    VALUES ?p {
+      ext:heeftBevoegdeVoorAgendapunt
+      ext:heeftBevoegde
+      ext:indiener
+      ext:heeftBevoegdeVoorPublicatie
+    }
+    FILTER NOT EXISTS {
+      ?s ?x ?y .
+      FILTER (
+        ?x != ext:heeftBevoegdeVoorAgendapunt
+        && ?x != ext:heeftBevoegde
+        && ?x != ext:indiener
+        && ?x != ext:heeftBevoegdeVoorPublicatie
+    )
+    }
+  }
+  VALUES ?g {
+    ${TARGET_GRAPHS.map(uri => `<${uri}>`).join('\n')}
+  }
+}`;
+    await fsp.writeFile(path.resolve(`${SPARQL_EXPORT_FILE_PATH}-cleanup-orphans.sparql`), cleanupOrphansQuery);
+    console.log('.sparql file generated at ' + path.resolve(`${SPARQL_EXPORT_FILE_PATH}-cleanup-orphans.sparql`));
+
     res.send(`.ttl file generated at ${path.resolve(TTL_EXPORT_FILE_BASE_PATH)}*.{ttl,graph} and .sparql files generated at ${path.resolve(SPARQL_EXPORT_FILE_PATH)}*.sparql (${batchCount} batches)`);
+
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
