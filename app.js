@@ -255,10 +255,14 @@ app.get('/agendapunt/matchings', async function(req, res) {
     return res.send('Query not finished yet. Try again later.');
   }
   matchings.agendapunten = matchings.agendapunten.filter((agendapunt) => {
-    if (req.query && req.query.minScore !== undefined) {
-      return agendapunt.themisMandataris !== undefined && agendapunt.themisMandataris.score >= +req.query.minScore;
+    let match = agendapunt.themisMandataris !== undefined;
+    if (match && req.query && req.query.titel !== undefined) {
+      match = agendapunt.kaleidosMandataris.normalizedTitel !== undefined && agendapunt.kaleidosMandataris.normalizedTitel.indexOf(req.query.titel.toLowerCase()) > -1;
     }
-    return agendapunt.themisMandataris !== undefined;
+    if (match && req.query && req.query.minScore !== undefined) {
+      match = agendapunt.themisMandataris !== undefined && agendapunt.themisMandataris.score >= +req.query.minScore;
+    }
+    return match;
   });
   if (req.query && req.query.sortBy) {
     sort(matchings.agendapunten, req.query.sortBy, req.query.order);
@@ -310,10 +314,14 @@ app.get('/procedurestap/matchings', async function(req, res) {
     return res.send('Query not finished yet. Try again later.');
   }
   matchings.procedurestappen = matchings.procedurestappen.filter((procedurestap) => {
-    if (req.query && req.query.minScore !== undefined) {
-      return procedurestap.themisMandataris !== undefined && procedurestap.themisMandataris.score >= +req.query.minScore;
+    let match = procedurestap.themisMandataris !== undefined;
+    if (match && req.query && req.query.titel !== undefined) {
+      match = procedurestap.kaleidosMandataris.normalizedTitel !== undefined && procedurestap.kaleidosMandataris.normalizedTitel.indexOf(req.query.titel.toLowerCase()) > -1;
     }
-    return procedurestap.themisMandataris !== undefined;
+    if (match && req.query && req.query.minScore !== undefined) {
+      match = procedurestap.themisMandataris !== undefined && procedurestap.themisMandataris.score >= +req.query.minScore;
+    }
+    return match;
   });
   if (req.query && req.query.sortBy) {
     sort(matchings.procedurestappen, req.query.sortBy, req.query.order);
