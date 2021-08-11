@@ -1,8 +1,9 @@
 /* returns true if the mandatary is an outlier and matching needs to be skipped */
 const isOutlier = function (mandataris) {
   return (mandataris.normalizedName &&
-    mandataris.normalizedName === 'verhofstadt' ||
+    mandataris.normalizedName === 'willy d_have' ||
     mandataris.normalizedName === 'eyskens' ||
+    mandataris.normalizedName === 'saeger' ||
     mandataris.normalizedName === 'saeger' ||
     mandataris.normalizedTitel === 'geens' // http://kanselarij.vo.data.gift/id/mandatarissen/8213290a-dec2-11e9-aa72-0242c0a80002
   ) ||
