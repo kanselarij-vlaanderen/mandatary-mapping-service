@@ -116,10 +116,6 @@ const createLookupDatasets = function () {
       const regering = regeringsData.regeringen[regeringsUrl];
       for (const samenstellingStart in regering.samenstellingen) {
         if (regering.samenstellingen.hasOwnProperty(samenstellingStart) && regering.samenstellingen[samenstellingStart].einde) {
-          // the last composition of Homans I has an end date that's one off
-          if (samenstellingStart === '2019-07-19') {
-            regering.samenstellingen[samenstellingStart].einde = regering.samenstellingen[samenstellingStart].einde.replace('2019-10-02', '2019-10-01');
-          }
           regering.samenstellingen[samenstellingStart].einde = regering.samenstellingen[samenstellingStart].einde.replace('T00:00:00Z', 'T23:59:59Z');
         }
       }
