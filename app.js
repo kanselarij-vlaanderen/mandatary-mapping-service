@@ -447,8 +447,10 @@ app.get('/agendapunt/generateMissingReport', async function(req, res) {
           const agendaId = agendapunt.agenda.substring(agendapunt.agenda.lastIndexOf('/') + 1);
           exportHTML += `<div><a target="_blank" href="https://kaleidos-test.vlaanderen.be/vergadering/${meetingId}/agenda/${agendaId}/agendapunten/${agendapuntId}">Bekijk dit agendapunt op kaleidos test omgeving</a></div>\n`;
           exportHTML += `<div><a target="_blank" href="https://kaleidos.vlaanderen.be/vergadering/${meetingId}/agenda/${agendaId}/agendapunten/${agendapuntId}">Bekijk dit agendapunt op kaleidos productie omgeving</a></div>\n`;
-          let themisUrl = `https://themis-test.vlaanderen.be/view/government-body?resource=${agendapunt.samenstelling.mandatarissen[0].regering}`;
-          exportHTML += `<div><a target="_blank" href="${themisUrl}">Bekijk de samenstelling Vlaamse regering in Themis ten tijde van dit agendapunt</a></div>\n`;
+          if (agendapunt.samenstelling) {
+            let themisUrl = `https://themis-test.vlaanderen.be/view/government-body?resource=${agendapunt.samenstelling.mandatarissen[0].regering}`;
+            exportHTML += `<div><a target="_blank" href="${themisUrl}">Bekijk de samenstelling Vlaamse regering in Themis ten tijde van dit agendapunt</a></div>\n`;
+          }
         }
         exportHTML += `</section>`;
     }
