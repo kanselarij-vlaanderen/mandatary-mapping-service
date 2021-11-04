@@ -247,7 +247,7 @@ app.get('/mandatarissen', async function(req, res) {
   res.send(mandatarissen);
 });
 
-// useful query to gain insight: http://localhost:8888/matchings?limit=100&sortBy=themisMandataris.score&order=asc
+// useful query to gain insight: http://localhost:8888/agendapunt/matchings?limit=100&sortBy=themisMandataris.score&order=asc
 app.get('/agendapunt/matchings', async function(req, res) {
   let baseUrl = getBaseUrl(req);
   let matchings = await kaleidosData.getAgendapuntMatches(req.query.includeSamenstelling, baseUrl);
