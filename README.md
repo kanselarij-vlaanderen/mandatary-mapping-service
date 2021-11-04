@@ -31,6 +31,43 @@ Note that the `DEV_OS` variable is optional, to enable live reload on Windows.
 Also note that the data volume is used to store a json file with the result of the query to get all agendapoints out of Kaleidos.
 This is useful during development, since this is a very heavy query, which can take several minutes to execute.
 
+### Production deploy instructions
+
+- Adapt `docker-compose.override.yml` to include "maintenance" image for frontend.
+- drc down
+- drc up -d frontend
+- Take a backup of the database folder (`root@kal-loebas /data/app-kaleidos-test # cp -r data/db/ data/db20211113`)
+- Update server's git repo for `app-kaleidos`
+- edit `docker-compose.override.yml` file to include mandatary-mapping-service
+```yml
+  mandatary-mapping:
+    build: https://github.com/kanselarij-vlaanderen/mandatary-mapping-service.git
+    ports:
+      - 127.0.0.1:8888:80
+    links:
+      - triplestore:database
+    volumes:
+      - ./data/themis-mandatary-mapping-migrations:/data/
+```
+- at the time of writing, Themis-data needed to run the mapping-service is included in the service repo by means of a `json`-file. Make sure it is the latest data.
+- `drc up -d triplestore`
+- `drc up -d --build mandatary-mapping`
+- watch logs and wait for initial data-loading to end
+- `curl -g http://127.0.0.1:8888/generatemigration`
+- watch logs for file generation to end
+- `drc stop mandatary-mapping`
+- `drc rm mandatary-mapping`
+
+- `mkdir config/migrations/20211113000002-themis-mandatary-mapping-sensitive`
+- Make sure that the timestamp in the folder-name you're creating puts these migrations in the right spot (**after** the migrations that have to run before, but **before** migrations that have to run after)
+- `cp ./data/themis-mandatary-mapping-migrations/*.{sparql,ttl,graph} config/migrations/20211113000002-themis-mandatary-mapping-sensitive`
+- You will now run all migrations. These include the Themis dataset & cleanup after mandatary-mapping migrations. Double-check the order in which migrations will be executed. `drc up -d migrations-service`.
+- watch logs for migrations to end. Retries because of large file sizes are ok.
+- `drc restart triplestore` for mem clearing, checkpoint, ...
+- Remove mandatary-mapping service entry from override file
+- comment out frontend maintenance override
+- Start search re-indexing 
+
 
 ## Usage
 *(assuming the configuration on port 8888 as above)*
