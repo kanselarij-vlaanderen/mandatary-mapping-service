@@ -6957,11 +6957,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7032,11 +7032,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7103,11 +7103,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7178,11 +7178,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7249,11 +7249,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7324,11 +7324,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7399,11 +7399,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7474,11 +7474,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7549,11 +7549,11 @@
         "tot": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-29T00:00:00Z"
+          "value": "1992-10-19T00:00:00Z"
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande I"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7614,12 +7614,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -7628,7 +7628,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7689,12 +7689,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -7703,7 +7703,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7760,12 +7760,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -7774,7 +7774,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7835,12 +7835,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -7849,7 +7849,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7906,12 +7906,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -7920,7 +7920,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -7981,12 +7981,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -7995,7 +7995,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -8056,12 +8056,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -8070,7 +8070,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -8131,12 +8131,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -8145,7 +8145,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -8206,12 +8206,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -8220,7 +8220,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -8281,12 +8281,12 @@
         },
         "regering": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/60d0dc2ab1838d01fca7db6d"
+          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907ce6670526694a049f"
         },
         "van": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1992-01-30T00:00:00Z"
+          "value": "1992-01-22T00:00:00Z"
         },
         "tot": {
           "type": "typed-literal",
@@ -8295,7 +8295,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VE)"
+          "value": "Van den Brande I (VE)"
         },
         "mandataris": {
           "type": "uri",
@@ -8370,7 +8370,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8445,7 +8445,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8516,7 +8516,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8591,7 +8591,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8662,7 +8662,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8737,7 +8737,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8812,7 +8812,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8887,7 +8887,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -8962,7 +8962,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9037,7 +9037,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9112,7 +9112,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9187,7 +9187,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9258,7 +9258,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9333,7 +9333,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9404,7 +9404,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9479,7 +9479,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9554,7 +9554,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9629,7 +9629,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9704,7 +9704,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9779,7 +9779,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9854,7 +9854,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -9925,7 +9925,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10000,7 +10000,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10071,7 +10071,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10146,7 +10146,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10221,7 +10221,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10296,7 +10296,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10371,7 +10371,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10446,7 +10446,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10521,7 +10521,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10596,7 +10596,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10667,7 +10667,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10742,7 +10742,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10817,7 +10817,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10892,7 +10892,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -10967,7 +10967,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -11042,7 +11042,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande II (VR)"
+          "value": "Van den Brande I (VR)"
         },
         "mandataris": {
           "type": "uri",
@@ -11117,7 +11117,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11192,7 +11192,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11267,7 +11267,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11342,7 +11342,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11413,7 +11413,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11488,7 +11488,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11563,7 +11563,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11638,7 +11638,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11713,7 +11713,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11788,7 +11788,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11863,7 +11863,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -11938,7 +11938,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12013,7 +12013,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12088,7 +12088,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12163,7 +12163,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12234,7 +12234,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12309,7 +12309,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12384,7 +12384,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12459,7 +12459,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12534,7 +12534,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12609,7 +12609,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12684,7 +12684,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12759,7 +12759,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12834,7 +12834,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12909,7 +12909,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -12984,7 +12984,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13055,7 +13055,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13130,7 +13130,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13205,7 +13205,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13280,7 +13280,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13355,7 +13355,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13430,7 +13430,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13505,7 +13505,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13580,7 +13580,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13655,7 +13655,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13730,7 +13730,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13805,7 +13805,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13876,7 +13876,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -13951,7 +13951,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -14026,7 +14026,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -14101,7 +14101,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -14176,7 +14176,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -14251,7 +14251,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -14326,7 +14326,7 @@
         },
         "regeringsLabel": {
           "type": "literal",
-          "value": "Van den Brande III"
+          "value": "Van den Brande II"
         },
         "mandataris": {
           "type": "uri",
@@ -18231,81 +18231,6 @@
         "rangorde": {
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#integer",
-          "value": "6"
-        },
-        "start": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2001-05-18T00:00:00Z"
-        },
-        "einde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2001-07-31T00:00:00Z"
-        },
-        "persoon": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/persoon/5fed907de6670526694a0545"
-        },
-        "mandaat": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandaat/5fed907de6670526694a0531"
-        },
-        "bestuursfunctie": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursfunctie/5fed907ce6670526694a03e0"
-        }
-      },
-      {
-        "legislatuur": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a052d"
-        },
-        "legislatuurLabel": {
-          "type": "literal",
-          "value": "Vlaamse Regering 13/07/1999 - 21/07/2004"
-        },
-        "regering": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a0533"
-        },
-        "van": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1999-07-13T00:00:00Z"
-        },
-        "tot": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-06-04T00:00:00Z"
-        },
-        "regeringsLabel": {
-          "type": "literal",
-          "value": "Dewael I"
-        },
-        "mandataris": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandataris/9daab663-7277-4080-85cb-d768feb5242b"
-        },
-        "voornaam": {
-          "type": "literal",
-          "value": "Vera"
-        },
-        "familienaam": {
-          "type": "literal",
-          "value": "Dua"
-        },
-        "bestuursfunctieLabel": {
-          "type": "literal",
-          "value": "Minister"
-        },
-        "titel": {
-          "type": "literal",
-          "value": "Vlaams minister van Leefmilieu en Landbouw"
-        },
-        "rangorde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
           "value": "7"
         },
         "start": {
@@ -18546,156 +18471,6 @@
         "persoon": {
           "type": "uri",
           "value": "http://themis.vlaanderen.be/id/persoon/5fed907de6670526694a0579"
-        },
-        "mandaat": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandaat/5fed907de6670526694a0531"
-        },
-        "bestuursfunctie": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursfunctie/5fed907ce6670526694a03e0"
-        }
-      },
-      {
-        "legislatuur": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a052d"
-        },
-        "legislatuurLabel": {
-          "type": "literal",
-          "value": "Vlaamse Regering 13/07/1999 - 21/07/2004"
-        },
-        "regering": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a0533"
-        },
-        "van": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1999-07-13T00:00:00Z"
-        },
-        "tot": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-06-04T00:00:00Z"
-        },
-        "regeringsLabel": {
-          "type": "literal",
-          "value": "Dewael I"
-        },
-        "mandataris": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandataris/9daab663-7277-4080-85cb-d768feb5242b"
-        },
-        "voornaam": {
-          "type": "literal",
-          "value": "Vera"
-        },
-        "familienaam": {
-          "type": "literal",
-          "value": "Dua"
-        },
-        "bestuursfunctieLabel": {
-          "type": "literal",
-          "value": "Minister"
-        },
-        "titel": {
-          "type": "literal",
-          "value": "Vlaams minister van Leefmilieu en Landbouw"
-        },
-        "rangorde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
-          "value": "6"
-        },
-        "start": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2001-05-18T00:00:00Z"
-        },
-        "einde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-03-18T00:00:00Z"
-        },
-        "persoon": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/persoon/5fed907de6670526694a0545"
-        },
-        "mandaat": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandaat/5fed907de6670526694a0531"
-        },
-        "bestuursfunctie": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursfunctie/5fed907ce6670526694a03e0"
-        }
-      },
-      {
-        "legislatuur": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a052d"
-        },
-        "legislatuurLabel": {
-          "type": "literal",
-          "value": "Vlaamse Regering 13/07/1999 - 21/07/2004"
-        },
-        "regering": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a0533"
-        },
-        "van": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1999-07-13T00:00:00Z"
-        },
-        "tot": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-06-04T00:00:00Z"
-        },
-        "regeringsLabel": {
-          "type": "literal",
-          "value": "Dewael I"
-        },
-        "mandataris": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandataris/9daab663-7277-4080-85cb-d768feb5242b"
-        },
-        "voornaam": {
-          "type": "literal",
-          "value": "Vera"
-        },
-        "familienaam": {
-          "type": "literal",
-          "value": "Dua"
-        },
-        "bestuursfunctieLabel": {
-          "type": "literal",
-          "value": "Minister"
-        },
-        "titel": {
-          "type": "literal",
-          "value": "Vlaams minister van Leefmilieu en Landbouw"
-        },
-        "rangorde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
-          "value": "7"
-        },
-        "start": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2001-05-18T00:00:00Z"
-        },
-        "einde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-03-18T00:00:00Z"
-        },
-        "persoon": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/persoon/5fed907de6670526694a0545"
         },
         "mandaat": {
           "type": "uri",
@@ -20523,156 +20298,6 @@
         },
         "mandataris": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandataris/9daab663-7277-4080-85cb-d768feb5242b"
-        },
-        "voornaam": {
-          "type": "literal",
-          "value": "Vera"
-        },
-        "familienaam": {
-          "type": "literal",
-          "value": "Dua"
-        },
-        "bestuursfunctieLabel": {
-          "type": "literal",
-          "value": "Minister"
-        },
-        "titel": {
-          "type": "literal",
-          "value": "Vlaams minister van Leefmilieu en Landbouw"
-        },
-        "rangorde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
-          "value": "6"
-        },
-        "start": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-01-31T00:00:00Z"
-        },
-        "einde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2001-07-31T00:00:00Z"
-        },
-        "persoon": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/persoon/5fed907de6670526694a0545"
-        },
-        "mandaat": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandaat/5fed907de6670526694a0531"
-        },
-        "bestuursfunctie": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursfunctie/5fed907ce6670526694a03e0"
-        }
-      },
-      {
-        "legislatuur": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a052d"
-        },
-        "legislatuurLabel": {
-          "type": "literal",
-          "value": "Vlaamse Regering 13/07/1999 - 21/07/2004"
-        },
-        "regering": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a0533"
-        },
-        "van": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1999-07-13T00:00:00Z"
-        },
-        "tot": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-06-04T00:00:00Z"
-        },
-        "regeringsLabel": {
-          "type": "literal",
-          "value": "Dewael I"
-        },
-        "mandataris": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandataris/9daab663-7277-4080-85cb-d768feb5242b"
-        },
-        "voornaam": {
-          "type": "literal",
-          "value": "Vera"
-        },
-        "familienaam": {
-          "type": "literal",
-          "value": "Dua"
-        },
-        "bestuursfunctieLabel": {
-          "type": "literal",
-          "value": "Minister"
-        },
-        "titel": {
-          "type": "literal",
-          "value": "Vlaams minister van Leefmilieu en Landbouw"
-        },
-        "rangorde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
-          "value": "7"
-        },
-        "start": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-01-31T00:00:00Z"
-        },
-        "einde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2001-07-31T00:00:00Z"
-        },
-        "persoon": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/persoon/5fed907de6670526694a0545"
-        },
-        "mandaat": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandaat/5fed907de6670526694a0531"
-        },
-        "bestuursfunctie": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursfunctie/5fed907ce6670526694a03e0"
-        }
-      },
-      {
-        "legislatuur": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a052d"
-        },
-        "legislatuurLabel": {
-          "type": "literal",
-          "value": "Vlaamse Regering 13/07/1999 - 21/07/2004"
-        },
-        "regering": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a0533"
-        },
-        "van": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1999-07-13T00:00:00Z"
-        },
-        "tot": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-06-04T00:00:00Z"
-        },
-        "regeringsLabel": {
-          "type": "literal",
-          "value": "Dewael I"
-        },
-        "mandataris": {
-          "type": "uri",
           "value": "http://themis.vlaanderen.be/id/mandataris/6c1ff914-8472-49ed-a22b-8d01d907ff8b"
         },
         "voornaam": {
@@ -21194,7 +20819,7 @@
         },
         "mandataris": {
           "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandataris/9daab663-7277-4080-85cb-d768feb5242b"
+          "value": "http://themis.vlaanderen.be/id/mandataris/95cfe981-9d27-4f00-8e50-28519f068e23"
         },
         "voornaam": {
           "type": "literal",
@@ -21216,81 +20841,6 @@
           "type": "typed-literal",
           "datatype": "http://www.w3.org/2001/XMLSchema#integer",
           "value": "6"
-        },
-        "start": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-01-31T00:00:00Z"
-        },
-        "einde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-03-18T00:00:00Z"
-        },
-        "persoon": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/persoon/5fed907de6670526694a0545"
-        },
-        "mandaat": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandaat/5fed907de6670526694a0531"
-        },
-        "bestuursfunctie": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursfunctie/5fed907ce6670526694a03e0"
-        }
-      },
-      {
-        "legislatuur": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a052d"
-        },
-        "legislatuurLabel": {
-          "type": "literal",
-          "value": "Vlaamse Regering 13/07/1999 - 21/07/2004"
-        },
-        "regering": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/bestuursorgaan/5fed907de6670526694a0533"
-        },
-        "van": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "1999-07-13T00:00:00Z"
-        },
-        "tot": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
-          "value": "2003-06-04T00:00:00Z"
-        },
-        "regeringsLabel": {
-          "type": "literal",
-          "value": "Dewael I"
-        },
-        "mandataris": {
-          "type": "uri",
-          "value": "http://themis.vlaanderen.be/id/mandataris/9daab663-7277-4080-85cb-d768feb5242b"
-        },
-        "voornaam": {
-          "type": "literal",
-          "value": "Vera"
-        },
-        "familienaam": {
-          "type": "literal",
-          "value": "Dua"
-        },
-        "bestuursfunctieLabel": {
-          "type": "literal",
-          "value": "Minister"
-        },
-        "titel": {
-          "type": "literal",
-          "value": "Vlaams minister van Leefmilieu en Landbouw"
-        },
-        "rangorde": {
-          "type": "typed-literal",
-          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
-          "value": "7"
         },
         "start": {
           "type": "typed-literal",
