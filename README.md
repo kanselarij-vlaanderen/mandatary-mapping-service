@@ -53,6 +53,8 @@ This is useful during development, since this is a very heavy query, which can t
 - `drc up -d triplestore`
 - `drc up -d --build mandatary-mapping`
 - watch logs and wait for initial data-loading to end
+- validate if the matching has gone well (not 10's missing for recent items) on http://127.0.0.1:8888/agendapunt/generateMissingReport
+- save http://127.0.0.1:8888/agendapunt/generateMissingReport as well as http://127.0.0.1:8888/procedurestap/generateMissingReport for later reference, so these can be fixed manually later on.
 - `curl -g http://127.0.0.1:8888/generatemigration`
 - watch logs for file generation to end
 - `drc stop mandatary-mapping`
