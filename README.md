@@ -53,16 +53,35 @@ This is useful during development, since this is a very heavy query, which can t
 - `drc up -d triplestore`
 - `drc up -d --build mandatary-mapping`
 - watch logs and wait for initial data-loading to end
+- Make notes on the current state of the DB regarding mandatary counts (public & kanselarij):
+```
+PREFIX mandaat: <http://data.vlaanderen.be/ns/mandaat#>
+
+select distinct ?m where {
+  GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {
+    ?m a mandaat:Mandataris
+  }
+}
+```
 - validate if the matching has gone well (not 10's missing for recent items) on http://127.0.0.1:8888/agendapunt/generateMissingReport
-- save http://127.0.0.1:8888/agendapunt/generateMissingReport as well as http://127.0.0.1:8888/procedurestap/generateMissingReport for later reference, so these can be fixed manually later on.
+- save http://127.0.0.1:8888/agendapunt/generateMissingReport as well as http://127.0.0.1:8888/procedurestap/generateMissingReport for later reference, so these can be fixed manually later on. (don't overwrite previous file. Equal default filenames ...)
 - `curl -g http://127.0.0.1:8888/generatemigration`
 - watch logs for file generation to end
 - `drc stop mandatary-mapping`
 - `drc rm mandatary-mapping`
 
-- `mkdir config/migrations/20211113000002-themis-mandatary-mapping-sensitive`
-- Make sure that the timestamp in the folder-name you're creating puts these migrations in the right spot (**after** the migrations that have to run before, but **before** migrations that have to run after)
-- `cp ./data/themis-mandatary-mapping-migrations/*.{sparql,ttl,graph} config/migrations/20211113000002-themis-mandatary-mapping-sensitive`
+- Make sure that the timestamp of the migration-files you're creating puts these migrations in the right spot (**after** the migrations that have to run before, but **before** migrations that have to run after)
+- `cp ./data/themis-mandatary-mapping-migrations/*.{sparql,ttl,graph} config/migrations`. If not, make sure to rename the checked-in migrations so they "fit around" the generated ones.
+  - **before:**
+  - `config/migrations/20211113000000-themis-mandatarissen-kanselarij.graph`
+  - `config/migrations/20211113000000-themis-mandatarissen-kanselarij.ttl`
+  - `config/migrations/20211113000001-themis-mandatarissen-public.graph`
+  - `config/migrations/20211113000001-themis-mandatarissen-public.ttl`
+  - **after:**
+  - `config/migrations/20211113000005-migrate-old-persons-to-new-model.sparql`
+  - `config/migrations/20211113000006-add-newsletter-title-for-mandatees.sparql`
+
+
 - You will now run all migrations. These include the Themis dataset & cleanup after mandatary-mapping migrations. Double-check the order in which migrations will be executed. `drc up -d migrations-service`.
 - watch logs for migrations to end. Retries because of large file sizes are ok.
 - `drc restart triplestore` for mem clearing, checkpoint, ...
